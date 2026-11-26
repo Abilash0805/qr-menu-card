@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Table QR Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{
+  --desk:#e7e2d9; --panel:#fbf9f5; --ink:#1f1c17; --ink-2:#5c554a; --ink-3:#8a8172; --rule:#d8cdb9; --accent:#a8462a;
+  --serif:"Fraunces", Georgia, serif; --sans:"Figtree", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+
+/* ---------- Control panel ---------- */
+.panel{
+  position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--rule);
+}
+.panel-inner{max-width:1180px;margin:0 auto;padding:16px 20px;display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end}
+.title{flex:1 1 100%;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.title h1{font-family:var(--serif);font-weight:400;font-size:26px;margin:0}
+.title p{margin:0;color:var(--ink-2);font-size:14px}
+.field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.field input,.field select{
+  font:inherit;font-size:15px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--ink);
+  height:40px;border:1px solid var(--rule);border-radius:8px;padding:0 10px;background:#fff;
+}
+.field.url{flex:1 1 320px}
+.field.url input{width:100%}
+.field.num input{width:84px}
+.seg{display:flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden;height:40px}
+.seg button{font:inherit;font-size:14px;padding:0 14px;border:0;background:#fff;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.print{
+  height:40px;padding:0 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+.warn{flex:1 1 100%;margin:0;font-size:13px;color:#8a4b12;background:#fbefd9;border:1px solid #efd2a1;border-radius:8px;padding:8px 12px}
+.warn[hidden]{display:none}
+.warn code{font-size:12.5px;background:#fff6e6;padding:1px 4px;border-radius:4px}
+
+/* ---------- Sheet of cards ---------- */
+.sheet{max-width:1180px;margin:0 auto;padding:32px 20px 64px;display:grid;grid-template-columns:repeat(auto-fill,105mm);gap:28px;justify-content:center}
+@media (max-width:460px){.sheet{grid-template-columns:1fr;justify-items:center}.card{zoom:.85}}
+
+/* A6 card: 105 × 148 mm */
+.card{
+  width:105mm;height:148mm;background:#f6f0e4;color:#1f1c17;position:relative;
+  box-shadow:0 1px 1px rgba(0,0,0,.06), 0 18px 40px -18px rgba(50,35,15,.45);
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:9mm 8mm 7mm;overflow:hidden;break-inside:avoid;
+}
+.card::before{ /* double hairline frame */
+  content:"";position:absolute;inset:4mm;border:.35mm solid currentColor;opacity:.75;pointer-events:none;
+  outline:.2mm solid currentColor;outline-offset:-1.3mm;
+}
+.card .hotel{font-size:7.4pt;letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-top:2mm;opacity:.8}
+.card .mark{width:9mm;height:9mm;margin:4mm 0 1mm;color:var(--c-accent,#a8462a)}
+.card .name{font-family:var(--serif);font-weight:400;font-size:34pt;line-height:1;letter-spacing:-.01em;font-variation-settings:"opsz" 144,"SOFT" 50}
+.card .tag{font-family:var(--serif);font-style:italic;font-size:10pt;opacity:.8;margin-top:1.5mm}
+.card .qrwrap{
+  margin:6mm 0 0;background:#fffdf8;padding:3.2mm;border-radius:2mm;position:relative;
+  box-shadow:inset 0 0 0 .25mm rgba(0,0,0,.12);
+}
+.card .qr{width:44mm;height:44mm;display:block}
+.card .qr svg{width:100%;height:100%;display:block}
+.card .scan{font-family:var(--serif);font-style:italic;font-size:10.5pt;margin-top:3.2mm}
+.card .table{margin-top:auto;display:flex;align-items:center;gap:3mm}
+.card .table small{font-size:7pt;letter-spacing:.3em;text-transform:uppercase;font-weight:600;opacity:.75}
+.card .table b{font-family:var(--serif);font-weight:400;font-size:26pt;line-height:1;font-variant-numeric:lining-nums;font-variation-settings:"opsz" 72}
+.card .table .rule{width:8mm;height:.3mm;background:currentColor;opacity:.5}
+.card .wifi{font-size:6.6pt;letter-spacing:.06em;opacity:.65;margin-top:2.6mm}
+
+/* Forest theme */
+.theme-forest .card{background:#1f3a2c;color:#efe6d2;--c-accent:#e3b46b}
+.theme-forest .card .qrwrap{background:#f6f0e4}
+/* Ink theme */
+.theme-ink .card{background:#17150f;color:#ece3d1;--c-accent:#e07a52}
+.theme-ink .card .qrwrap{background:#f6f0e4}
+
+.howto{max-width:1180px;margin:0 auto;padding:0 20px 48px;color:var(--ink-2);font-size:14px;columns:2 320px;column-gap:40px}
+.howto h2{font-family:var(--serif);font-weight:400;font-size:20px;color:var(--ink);margin:0 0 6px;column-span:all}
+.howto ol{margin:0;padding-left:18px}
+.howto li{margin-bottom:6px;break-inside:avoid}
+
+/* ---------- Print: 4 × A6 on A4, with crop space ---------- */
+@page{size:A4;margin:0}
+@media print{
+  body{background:#fff}
+  .panel,.howto{display:none}
+  .sheet{
+    max-width:none;margin:0;padding:0;gap:0;width:210mm;
+    grid-template-columns:105mm 105mm;grid-auto-rows:148.5mm;justify-items:center;align-items:center;
+  }
+  .card{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card:nth-child(4n+1){break-before:page}
+}
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <div class="panel-inner">
+    <div class="title">
+      <h1>Table QR cards</h1>
+      <p>A6 table tents, four to an A4 sheet. Each code opens the menu with its table number.</p>
+    </div>
+    <label class="field url">Menu address
+      <input id="base" type="url" spellcheck="false">
+    </label>
+    <label class="field num">First table <input id="from" type="number" min="1" value="1"></label>
+    <label class="field num">Last table <input id="to" type="number" min="1" value="12"></label>
+    <div class="field">Finish
+      <div class="seg" id="theme">
+        <button data-theme="ivory" aria-pressed="true">Ivory</button>
+        <button data-theme="forest" aria-pressed="false">Forest</button>
+        <button data-theme="ink" aria-pressed="false">Ink</button>
+      </div>
+    </div>
+    <button class="print" onclick="print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3"/><path d="M7 14h10v7H7z"/></svg>
+      Print cards
+    </button>
+    <p class="warn" id="warn" hidden></p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet"></div>
+
+<section class="howto">
+  <h2>Putting these on tables</h2>
+  <ol>
+    <li>Host the folder anywhere public (Netlify, Vercel, GitHub Pages, your hotel's own site) and paste that address above. The QR codes update instantly.</li>
+    <li>Scan one card with your phone before printing the batch — check it opens the right table.</li>
+    <li>Print on 300–350 gsm matte card at 100% scale (no "fit to page"), then cut along the card edges.</li>
+    <li>Slide each card into an acrylic A6 stand. Keep the code at least 4 cm wide so older phones read it from a seated position.</li>
+    <li>The menu itself lives in <code>menu-data.js</code>. Change a price there and every table updates — no reprinting.</li>
+  </ol>
+</section>
+
+<script src="menu-data.js"></script>
+<script>
+(() => {
+  const { venue } = window.MENU;
+  const $ = s => document.querySelector(s);
+  const KEY = "qr-cards-settings";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
+
+  const defaultBase = new URL("./", location.href).href;
+  $("#base").value = saved.base || defaultBase;
+  $("#from").value = saved.from || 1;
+  $("#to").value = saved.to || 12;
+  let theme = saved.theme || "ivory";
+
+  const mark = `<svg class="mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+    <path d="M6 30c6-5 12-5 18 0s12 5 18 0"/><path d="M6 37c6-5 12-5 18 0s12 5 18 0"/>
+    <path d="M24 6c-5 6-5 13 0 19 5-6 5-13 0-19Z"/><path d="M24 25V12"/></svg>`;
+
+  function qrSvg(text) {
+    if (!window.qrcode) return `<div style="width:100%;height:100%;display:grid;place-items:center;font-size:8pt;color:#a8462a">QR library didn't load — check your connection</div>`;
+    const q = qrcode(0, "Q");            // Q = 25% error correction: survives scuffs and coffee rings
+    q.addData(text); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  }
+
+  function linkFor(base, n) {
+    const u = new URL(base, location.href);
+    u.searchParams.set("t", n);
+    return u.href;
+  }
+
+  function render() {
+    const base = $("#base").value.trim() || defaultBase;
+    let from = Math.max(1, parseInt($("#from").value) || 1);
+    let to = Math.min(from + 199, Math.max(from, parseInt($("#to").value) || from));
+    try { localStorage.setItem(KEY, JSON.stringify({ base, from, to, theme })); } catch {}
+
+    document.body.className = "theme-" + theme;
+    document.querySelectorAll("#theme button").forEach(b => b.setAttribute("aria-pressed", b.dataset.theme === theme));
+
+    let warn = "";
+    try {
+      const u = new URL(base, location.href);
+      if (u.protocol === "file:") warn = "This address is a file on this computer, so a phone can't open it. Run <code>python -m http.server 8000</code> in this folder and use your PC's Wi-Fi address (e.g. <code>http://192.168.1.20:8000/</code>), or host the folder online.";
+      else if (/^(localhost|127\.|\[::1\])/.test(u.hostname)) warn = "<b>localhost</b> only works on this computer. For a phone test, replace it with this PC's Wi-Fi IP address (run <code>ipconfig</code> to find it); for real tables, use your public site address.";
+    } catch { warn = "That doesn't look like a valid web address."; }
+    $("#warn").innerHTML = warn; $("#warn").hidden = !warn;
+
+    const cards = [];
+    for (let n = from; n <= to; n++) {
+      const label = String(n).padStart(2, "0");
+      const href = linkFor(base, n);
+      cards.push(`<article class="card" title="${href}">
+        <div class="hotel">${venue.hotel}</div>
+        ${mark}
+        <div class="name">${venue.restaurant}</div>
+        <div class="tag">${venue.tagline}</div>
+        <div class="qrwrap"><div class="qr">${qrSvg(href)}</div></div>
+        <div class="scan">Scan for today's menu</div>
+        <div class="table"><span class="rule"></span><small>Table</small><b>${label}</b><span class="rule"></span></div>
+        <div class="wifi">Wi-Fi ${venue.wifi.name} &nbsp;·&nbsp; ${venue.wifi.password}</div>
+      </article>`);
+    }
+    $("#sheet").innerHTML = cards.join("");
+  }
+
+  let t;
+  ["#base", "#from", "#to"].forEach(s => $(s).addEventListener("input", () => { clearTimeout(t); t = setTimeout(render, 200); }));
+  $("#theme").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { theme = b.dataset.theme; render(); } });
+  render();
+})();
+</script>
+</body>
+</html>

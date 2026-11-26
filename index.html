@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3ede2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)">
+<title>Kaveri — Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3ede2; --paper-2:#ebe3d4; --card:#fbf8f2;
+  --ink:#1f1c17; --ink-2:#5c554a; --ink-3:#8a8172;
+  --rule:#d8cdb9; --accent:#a8462a; --accent-ink:#fff8f2;
+  --leaf:#2f6b3f; --chili:#b23a26; --egg:#c98a1b;
+  --shadow:0 1px 0 rgba(0,0,0,.04), 0 10px 30px -12px rgba(60,40,20,.25);
+  --serif:"Fraunces", Georgia, serif;
+  --sans:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#14130f; --paper-2:#1c1a15; --card:#1f1d18;
+    --ink:#efe7d8; --ink-2:#b9ae9b; --ink-3:#857c6d;
+    --rule:#36322a; --accent:#e07a52; --accent-ink:#1a0f0a;
+    --leaf:#5fae74; --chili:#e2624b; --egg:#e0a83e;
+    --shadow:0 10px 30px -12px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:120px;-webkit-text-size-adjust:100%}
+body{overflow-x:clip;
+  margin:0; background:var(--paper); color:var(--ink);
+  font:16px/1.5 var(--sans); -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+
+/* ---------- Masthead ---------- */
+.masthead{padding:28px 20px 22px;text-align:center;position:relative}
+.topline{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);
+}
+.table-chip{
+  border:1px solid var(--ink);border-radius:999px;padding:5px 12px 4px;
+  color:var(--ink);font-weight:600;letter-spacing:.12em;
+}
+.table-chip[hidden]{display:none}
+.mark{margin:34px auto 6px;width:44px;height:44px;color:var(--accent)}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:clamp(56px,16vw,84px);
+  line-height:.95;margin:0;letter-spacing:-.02em;
+  font-variation-settings:"opsz" 144, "SOFT" 50;
+}
+.tagline{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink-2);margin:8px 0 0}
+.hours{font-size:13px;color:var(--ink-3);margin:14px 0 0;letter-spacing:.02em}
+
+/* ---------- Sticky nav ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 92%,transparent);
+  backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.cats{
+  display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 20px 0;
+  max-width:640px;margin:0 auto;scroll-snap-type:x proximity;
+}
+.cats::-webkit-scrollbar{display:none}
+.cats button{
+  flex:none;padding:8px 12px 12px;font-size:14px;font-weight:500;color:var(--ink-3);
+  border-bottom:2px solid transparent;white-space:nowrap;scroll-snap-align:start;
+  transition:color .2s,border-color .2s;
+}
+.cats button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tools{display:flex;gap:10px;padding:10px 20px 12px;max-width:640px;margin:0 auto;align-items:center}
+.search{
+  flex:1;display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid var(--rule);border-radius:10px;padding:0 12px;height:40px;
+}
+.search svg{flex:none;color:var(--ink-3)}
+.search input{border:0;outline:0;background:none;font:inherit;font-size:15px;color:var(--ink);width:100%;min-width:0}
+.search input::placeholder{color:var(--ink-3)}
+.search:focus-within{border-color:var(--ink-2)}
+.toggle{
+  display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:10px;
+  border:1px solid var(--rule);background:var(--card);font-size:14px;font-weight:500;white-space:nowrap;
+}
+.toggle[aria-pressed="true"]{border-color:var(--leaf);color:var(--leaf)}
+.toggle .sw{width:28px;height:16px;border-radius:9px;background:var(--rule);position:relative;transition:background .2s}
+.toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--card);transition:transform .2s}
+.toggle[aria-pressed="true"] .sw{background:var(--leaf)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(12px)}
+
+/* ---------- Menu ---------- */
+.section{padding:40px 0 8px}
+.section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px}
+.section-head h2{
+  font-family:var(--serif);font-weight:400;font-size:32px;margin:0;letter-spacing:-.01em;
+  font-variation-settings:"opsz" 72;
+}
+.section-head .count{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;margin-left:auto}
+.section-note{font-family:var(--serif);font-style:italic;color:var(--ink-2);margin:0 0 10px;font-size:16px}
+.items{list-style:none;margin:0;padding:0}
+.item{border-top:1px solid var(--rule);padding:18px 0}
+.item:first-child{border-top:0}
+.item-btn{display:block;width:100%;text-align:left}
+.item-row{display:flex;align-items:baseline;gap:10px}
+.diet{flex:none;width:14px;height:14px;border:1.5px solid currentColor;border-radius:2px;position:relative;top:1px;align-self:center}
+.diet::after{content:"";position:absolute;inset:2.5px;border-radius:50%;background:currentColor}
+.diet.veg{color:var(--leaf)}
+.diet.egg{color:var(--egg)}
+.diet.nonveg{color:var(--chili)}
+.diet.nonveg::after{border-radius:0;inset:auto;left:50%;top:50%;width:0;height:0;background:none;
+  border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid currentColor;transform:translate(-50%,-55%)}
+.name{font-family:var(--serif);font-size:19px;font-weight:500;line-height:1.25;font-variation-settings:"opsz" 24}
+.leader{flex:1;border-bottom:1px dotted var(--ink-3);opacity:.6;transform:translateY(-4px);min-width:16px}
+.price{font-variant-numeric:tabular-nums lining-nums;font-weight:500;font-size:16px;white-space:nowrap}
+.price.mp{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--ink-2)}
+.desc{color:var(--ink-2);font-size:14.5px;margin:6px 0 0 24px;max-width:46ch}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:8px 0 0 24px;font-size:12px;color:var(--ink-3)}
+.tag{
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  color:var(--accent);
+}
+.tag::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:2px}
+.spice{display:inline-flex;gap:2px;align-items:center}
+.spice i{width:6px;height:10px;border-radius:3px 3px 6px 6px;background:var(--rule)}
+.spice i.on{background:var(--chili)}
+.allergens{font-style:italic}
+.added{
+  margin-left:auto;display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);
+}
+.item.in-list .added{display:inline-flex}
+.item.in-list .name{color:var(--accent)}
+.empty{padding:60px 0;text-align:center;color:var(--ink-2)}
+.empty b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;color:var(--ink);margin-bottom:4px}
+
+.footnote{margin:48px 0 0;padding:24px 0 0;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);line-height:1.6}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;color:var(--ink-2)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.wifi{margin-top:18px;padding:14px 16px;border:1px dashed var(--rule);border-radius:10px;color:var(--ink-2);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wifi b{color:var(--ink);font-weight:600}
+.colophon{text-align:center;margin:32px 0 12px;font-family:var(--serif);font-style:italic;color:var(--ink-3)}
+
+/* ---------- Bottom tray ---------- */
+.tray{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--paper) 70%,transparent);
+}
+.tray-inner{max-width:608px;margin:0 auto;display:flex;gap:10px}
+.btn{
+  height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:10px;
+  font-weight:600;font-size:15px;
+}
+.btn-ghost{background:var(--card);border:1px solid var(--rule);padding:0 18px;box-shadow:var(--shadow)}
+.btn-primary{flex:1;background:var(--ink);color:var(--paper);padding:0 18px;justify-content:space-between;box-shadow:var(--shadow)}
+.btn-primary[disabled]{opacity:1;background:var(--card);color:var(--ink-3);border:1px solid var(--rule);justify-content:center;cursor:default}
+.btn-primary .badge{background:var(--accent);color:var(--accent-ink);border-radius:999px;min-width:24px;height:24px;padding:0 7px;display:inline-grid;place-items:center;font-size:13px}
+.btn-primary .total{font-variant-numeric:tabular-nums}
+
+/* ---------- Sheets ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,10,5,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);
+  border-radius:20px 20px 0 0;max-height:86vh;display:flex;flex-direction:column;
+  transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+  max-width:640px;margin:0 auto;box-shadow:0 -10px 40px rgba(0,0,0,.2);
+}
+.sheet.open{transform:none}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--rule);margin:10px auto 0}
+.sheet-head{padding:16px 22px 12px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--rule)}
+.sheet-head h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:0}
+.sheet-head .close{font-size:14px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.sheet-body{overflow-y:auto;padding:4px 22px 8px}
+.sheet-foot{padding:14px 22px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--rule)}
+
+.line{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.line:last-child{border-bottom:0}
+.line .ln{flex:1;min-width:0}
+.line .ln b{display:block;font-family:var(--serif);font-weight:500;font-size:17px}
+.line .ln small{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.stepper{display:flex;align-items:center;border:1px solid var(--rule);border-radius:10px;height:36px}
+.stepper button{width:34px;height:100%;font-size:18px;color:var(--ink-2)}
+.stepper span{min-width:22px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
+.sum{display:flex;justify-content:space-between;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.sum.small{font-size:13px;color:var(--ink-3)}
+.sum.big{font-size:18px;font-weight:600;margin-top:4px}
+.hint{font-size:13px;color:var(--ink-2);margin:12px 0 14px;line-height:1.45}
+.full{width:100%;justify-content:center}
+
+/* Item detail sheet */
+.detail{padding:6px 0 4px}
+.detail .tags{display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 10px}
+.detail h4{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;margin:6px 0 10px}
+.detail p{color:var(--ink-2);margin:0 0 16px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px;margin:0 0 6px;padding:14px 0;border-top:1px solid var(--rule)}
+.facts dt{color:var(--ink-3)}
+.facts dd{margin:0}
+
+/* Service sheet */
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 0}
+.svc button{
+  border:1px solid var(--rule);border-radius:14px;padding:18px 14px;text-align:left;background:var(--paper);
+  display:flex;flex-direction:column;gap:10px;transition:border-color .15s;
+}
+.svc button:active{border-color:var(--ink)}
+.svc svg{color:var(--accent)}
+.svc b{font-weight:600}
+.svc small{color:var(--ink-3);font-size:12.5px;line-height:1.35}
+
+.toast{
+  position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));z-index:60;
+  transform:translate(-50%,-20px);opacity:0;transition:all .3s;
+  background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:12px;font-size:14px;
+  max-width:calc(100% - 32px);box-shadow:var(--shadow);text-align:center;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (min-width:700px){ .masthead{padding-top:48px} }
+.masthead .topline{gap:12px}
+</style>
+</head>
+<body>
+
+<header class="masthead wrap">
+  <div class="topline">
+    <span id="hotel"></span>
+    <span class="table-chip" id="tableChip" hidden></span>
+  </div>
+  <svg class="mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+    <path d="M6 30c6-5 12-5 18 0s12 5 18 0"/><path d="M6 37c6-5 12-5 18 0s12 5 18 0"/>
+    <path d="M24 6c-5 6-5 13 0 19 5-6 5-13 0-19Z"/><path d="M24 25V12"/>
+  </svg>
+  <h1 id="restaurant"></h1>
+  <p class="tagline" id="tagline"></p>
+  <p class="hours" id="hours"></p>
+</header>
+
+<div class="bar">
+  <nav class="cats" id="cats" aria-label="Menu sections"></nav>
+  <div class="tools">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search dishes" autocomplete="off" aria-label="Search the menu">
+    </label>
+    <button class="toggle" id="vegToggle" aria-pressed="false"><span class="sw"></span>Veg only</button>
+  </div>
+</div>
+
+<main class="wrap" id="menu"></main>
+
+<footer class="wrap">
+  <div class="footnote">
+    <div class="legend">
+      <span><i class="diet veg"></i>Vegetarian</span>
+      <span><i class="diet egg"></i>Contains egg</span>
+      <span><i class="diet nonveg"></i>Non-vegetarian</span>
+      <span><span class="spice"><i class="on"></i><i></i><i></i></span>Heat</span>
+    </div>
+    <span id="footnote"></span>
+    <div class="wifi" id="wifi"></div>
+  </div>
+  <p class="colophon" id="colophon"></p>
+</footer>
+
+<div class="tray">
+  <div class="tray-inner">
+    <button class="btn btn-ghost" id="callBtn" aria-label="Call a server">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+      Server
+    </button>
+    <button class="btn btn-primary" id="listBtn" disabled>
+      <span id="listLabel">Tap a dish to save it</span>
+    </button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<section class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-label="Dish details">
+  <div class="grab"></div>
+  <div class="sheet-body" id="detailBody"></div>
+  <div class="sheet-foot"><button class="btn btn-primary full" id="detailAdd"></button></div>
+</section>
+
+<section class="sheet" id="listSheet" role="dialog" aria-modal="true" aria-labelledby="listTitle">
+  <div class="grab"></div>
+  <div class="sheet-head"><h3 id="listTitle">Your list</h3><button class="close" data-close>Keep browsing</button></div>
+  <div class="sheet-body" id="listBody"></div>
+  <div class="sheet-foot" id="listFoot"></div>
+</section>
+
+<section class="sheet" id="svcSheet" role="dialog" aria-modal="true" aria-labelledby="svcTitle">
+  <div class="grab"></div>
+  <div class="sheet-head"><h3 id="svcTitle">How can we help?</h3><button class="close" data-close>Close</button></div>
+  <div class="sheet-body">
+    <div class="svc">
+      <button data-svc="A server is on the way">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+        <b>Call server</b><small>Ready to order, or a question</small>
+      </button>
+      <button data-svc="Water is on its way">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h10l-1.5 17a2 2 0 0 1-2 1.8h-3a2 2 0 0 1-2-1.8L7 3Z"/><path d="M7.6 9h8.8"/></svg>
+        <b>Water</b><small>Still or sparkling</small>
+      </button>
+      <button data-svc="We'll bring your bill shortly">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></svg>
+        <b>The bill</b><small>Card, UPI or cash</small>
+      </button>
+      <button data-svc="Cutlery is on its way">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v6M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>
+        <b>Cutlery</b><small>Extra plates or napkins</small>
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="menu-data.js"></script>
+<script>
+(() => {
+  const { venue, sections } = window.MENU;
+  const $ = s => document.querySelector(s);
+  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(n);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const TAGS = { chef: "Chef's pick", signature: "Signature", new: "New", seasonal: "Seasonal" };
+  const DIET = { veg: "Vegetarian", egg: "Contains egg", nonveg: "Non-vegetarian" };
+  const SPICE = ["Not spicy", "Mild", "Medium", "Hot"];
+  const items = new Map(sections.flatMap(s => s.items.map(i => [i.id, { ...i, section: s.title }])));
+
+  /* ---- Table number from the QR link: ?t=7 or ?table=7 ---- */
+  const p = new URLSearchParams(location.search);
+  const rawTable = (p.get("t") || p.get("table") || "").replace(/[^\w-]/g, "").slice(0, 6);
+  const table = rawTable ? (/^\d+$/.test(rawTable) ? rawTable.padStart(2, "0") : rawTable.toUpperCase()) : "";
+
+  /* ---- Static copy ---- */
+  document.title = `${venue.restaurant} — Menu`;
+  $("#hotel").textContent = `${venue.hotel} · ${venue.city}`;
+  $("#restaurant").textContent = venue.restaurant;
+  $("#tagline").textContent = venue.tagline;
+  $("#hours").textContent = venue.hours;
+  $("#footnote").textContent = venue.footnote;
+  $("#colophon").textContent = `Thank you for dining with us at ${venue.hotel}.`;
+  $("#wifi").innerHTML = `<span>Wi-Fi <b>${esc(venue.wifi.name)}</b></span><span>Password <b>${esc(venue.wifi.password)}</b></span>`;
+  if (table) { const c = $("#tableChip"); c.hidden = false; c.textContent = `Table ${table}`; }
+
+  /* ---- Shortlist (per table, survives reloads in this tab) ---- */
+  const KEY = `kaveri-list-${table || "x"}`;
+  let list = {};
+  try { list = JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch {}
+  const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
+
+  /* ---- Render ---- */
+  const spiceDots = n => n ? `<span class="spice" title="${SPICE[n]}" aria-label="${SPICE[n]}">${[1,2,3].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>` : "";
+  const priceHtml = i => i.price == null ? `<span class="price mp">${esc(i.priceNote || "Ask")}</span>` : `<span class="price">${inr(i.price)}</span>`;
+
+  function itemHtml(i) {
+    const tags = i.tags.map(t => `<span class="tag">${TAGS[t]}</span>`).join("");
+    const allergens = i.allergens.length ? `<span class="allergens">Contains ${i.allergens.join(", ")}</span>` : "";
+    return `<li class="item${list[i.id] ? " in-list" : ""}" data-id="${i.id}">
+      <button class="item-btn" aria-label="${esc(i.name)}, ${i.price ? inr(i.price) : "market price"}">
+        <div class="item-row">
+          <i class="diet ${i.diet}" title="${DIET[i.diet]}"></i>
+          <span class="name">${esc(i.name)}</span>
+          <span class="leader"></span>
+          ${priceHtml(i)}
+        </div>
+        <p class="desc">${esc(i.desc)}</p>
+        <div class="meta">${tags}${spiceDots(i.spice)}${allergens}
+          <span class="added"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg>In your list${list[i.id] > 1 ? " ×" + list[i.id] : ""}</span>
+        </div>
+      </button>
+    </li>`;
+  }
+
+  const state = { q: "", veg: false };
+  function render() {
+    const q = state.q.trim().toLowerCase();
+    let shown = 0;
+    const html = sections.map(s => {
+      const its = s.items.filter(i =>
+        (!state.veg || i.diet === "veg") &&
+        (!q || (i.name + " " + i.desc + " " + i.allergens.join(" ")).toLowerCase().includes(q)));
+      shown += its.length;
+      if (!its.length) return "";
+      return `<section class="section" id="${s.id}" data-title="${esc(s.title)}">
+        <div class="section-head"><h2>${esc(s.title)}</h2><span class="count">${its.length} ${its.length === 1 ? "dish" : "dishes"}</span></div>
+        ${s.note ? `<p class="section-note">${esc(s.note)}</p>` : ""}
+        <ul class="items">${its.map(itemHtml).join("")}</ul>
+      </section>`;
+    }).join("");
+    $("#menu").innerHTML = shown ? html :
+      `<div class="empty"><b>Nothing matches “${esc(state.q)}”</b>Try another word, or ask your server — the kitchen is happy to adapt.</div>`;
+    renderNav();
+  }
+
+  /* ---- Section nav + scroll spy ---- */
+  let spy;
+  function renderNav() {
+    const present = [...document.querySelectorAll(".section")];
+    $("#cats").innerHTML = present.map(s => `<button data-target="${s.id}">${s.dataset.title}</button>`).join("");
+    spy?.disconnect();
+    spy = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: "-130px 0px -60% 0px" });
+    present.forEach(s => spy.observe(s));
+    if (present[0]) setActive(present[0].id);
+  }
+  function setActive(id) {
+    document.querySelectorAll(".cats button").forEach(b => {
+      const on = b.dataset.target === id;
+      b.setAttribute("aria-current", on);
+      if (on) { const c = b.parentElement; c.scrollTo({ left: b.offsetLeft - (c.clientWidth - b.offsetWidth) / 2, behavior: "smooth" }); }
+    });
+  }
+  $("#cats").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    document.getElementById(b.dataset.target).scrollIntoView({ behavior: "smooth" });
+  });
+
+  /* ---- Filters ---- */
+  let t;
+  $("#q").addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => { state.q = e.target.value; render(); }, 120); });
+  $("#vegToggle").addEventListener("click", e => {
+    state.veg = !state.veg; e.currentTarget.setAttribute("aria-pressed", state.veg); render();
+  });
+
+  /* ---- Sheets ---- */
+  const scrim = $("#scrim");
+  let openSheet = null;
+  function open(sheet) { close(); openSheet = sheet; sheet.classList.add("open"); scrim.classList.add("open"); document.body.style.overflow = "hidden"; }
+  function close() { if (!openSheet) return; openSheet.classList.remove("open"); scrim.classList.remove("open"); document.body.style.overflow = ""; openSheet = null; }
+  scrim.addEventListener("click", close);
+  document.addEventListener("keydown", e => e.key === "Escape" && close());
+  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", close));
+
+  /* Item detail */
+  let current = null;
+  $("#menu").addEventListener("click", e => {
+    const li = e.target.closest(".item"); if (!li) return;
+    current = items.get(li.dataset.id);
+    const i = current;
+    $("#detailBody").innerHTML = `<div class="detail">
+      <div class="tags" style="margin-top:14px"><i class="diet ${i.diet}"></i>${i.tags.map(t => `<span class="tag">${TAGS[t]}</span>`).join("")}</div>
+      <h4>${esc(i.name)}</h4>
+      <p>${esc(i.desc)}</p>
+      <dl class="facts">
+        <dt>Section</dt><dd>${esc(i.section)}</dd>
+        <dt>Diet</dt><dd>${DIET[i.diet]}</dd>
+        <dt>Heat</dt><dd>${SPICE[i.spice]}</dd>
+        <dt>Allergens</dt><dd>${i.allergens.length ? esc(i.allergens.join(", ")) : "None declared"}</dd>
+        <dt>Price</dt><dd style="font-variant-numeric:tabular-nums">${i.price == null ? esc(i.priceNote) : inr(i.price)}</dd>
+      </dl></div>`;
+    $("#detailAdd").innerHTML = list[i.id] ? `<span>In your list ×${list[i.id]}</span><span>Add another</span>` : `<span>Add to my list</span><span>${i.price == null ? "" : inr(i.price)}</span>`;
+    open($("#detailSheet"));
+  });
+  $("#detailAdd").addEventListener("click", () => {
+    list[current.id] = (list[current.id] || 0) + 1;
+    save(); close(); refresh();
+    toast(`${current.name} added to your list`);
+  });
+
+  /* List */
+  function totals() {
+    let n = 0, sum = 0, market = false;
+    for (const [id, q] of Object.entries(list)) { const i = items.get(id); if (!i) continue; n += q; if (i.price == null) market = true; else sum += i.price * q; }
+    return { n, sum, market };
+  }
+  function refresh() {
+    const { n, sum, market } = totals();
+    const b = $("#listBtn");
+    b.disabled = !n;
+    b.innerHTML = n
+      ? `<span style="display:flex;gap:10px;align-items:center"><span class="badge">${n}</span>View my list</span><span class="total">${inr(sum)}${market ? "+" : ""}</span>`
+      : `<span>Tap a dish to save it</span>`;
+    document.querySelectorAll(".item").forEach(li => {
+      const q = list[li.dataset.id];
+      li.classList.toggle("in-list", !!q);
+      const a = li.querySelector(".added");
+      if (a) a.lastChild.textContent = "In your list" + (q > 1 ? " ×" + q : "");
+    });
+    if (openSheet === $("#listSheet")) renderList();
+  }
+  function renderList() {
+    const rows = Object.entries(list).filter(([id]) => items.has(id));
+    if (!rows.length) { close(); return; }
+    $("#listBody").innerHTML = rows.map(([id, q]) => {
+      const i = items.get(id);
+      return `<div class="line" data-id="${id}">
+        <i class="diet ${i.diet}"></i>
+        <div class="ln"><b>${esc(i.name)}</b><small>${i.price == null ? esc(i.priceNote) : inr(i.price) + (q > 1 ? " each" : "")}</small></div>
+        <div class="stepper"><button data-d="-1" aria-label="One less">−</button><span>${q}</span><button data-d="1" aria-label="One more">+</button></div>
+      </div>`;
+    }).join("");
+    const { sum, market } = totals();
+    const gst = Math.round(sum * 0.05);
+    $("#listFoot").innerHTML = `
+      <div class="sum small"><span>Subtotal</span><span>${inr(sum)}</span></div>
+      <div class="sum small"><span>GST 5%</span><span>${inr(gst)}</span></div>
+      <div class="sum big"><span>Estimated total</span><span>${inr(sum + gst)}${market ? "+" : ""}</span></div>
+      <p class="hint">This list isn't an order. Show it to your server${table ? ` at table ${table}` : ""}, or tap below and we'll come to you.${market ? " Market-price dishes are confirmed at the table." : ""}</p>
+      <button class="btn btn-primary full" id="readyBtn">I'm ready to order</button>`;
+    $("#readyBtn").onclick = () => { close(); toast(`Your server has been told${table ? " — table " + table : ""}. They'll be right over.`); };
+  }
+  $("#listBtn").addEventListener("click", () => { renderList(); open($("#listSheet")); });
+  $("#listBody").addEventListener("click", e => {
+    const b = e.target.closest("[data-d]"); if (!b) return;
+    const id = b.closest(".line").dataset.id;
+    list[id] = (list[id] || 0) + Number(b.dataset.d);
+    if (list[id] <= 0) delete list[id];
+    save(); refresh();
+  });
+
+  /* Service */
+  $("#callBtn").addEventListener("click", () => open($("#svcSheet")));
+  $("#svcSheet").addEventListener("click", e => {
+    const b = e.target.closest("[data-svc]"); if (!b) return;
+    close(); toast(b.dataset.svc + (table ? ` — table ${table}` : ""));
+  });
+
+  let tt;
+  function toast(msg) {
+    const el = $("#toast"); el.textContent = msg; el.classList.add("show");
+    clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 2600);
+  }
+
+  render(); refresh();
+})();
+</script>
+</body>
+</html>
