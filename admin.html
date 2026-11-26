@@ -39,6 +39,7 @@ a{color:inherit}
 .btn.quiet{border-color:transparent;background:none;color:var(--ink-2)}
 .btn.quiet:hover{background:var(--sunk)}
 .btn[disabled]{opacity:.45;pointer-events:none}
+.btn[hidden]{display:none}
 .tabs{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;gap:4px}
 .tabs button{border:0;background:none;padding:10px 12px 12px;font-weight:500;color:var(--ink-3);border-bottom:2px solid transparent}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
@@ -130,6 +131,51 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 .details .hint{font-weight:400;color:var(--ink-3)}
 @media (max-width:720px){.details{grid-template-columns:1fr}}
 
+/* ---------- Orders ---------- */
+.tab-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;margin-left:4px;vertical-align:1px}
+.tab-badge[hidden]{display:none}
+#ordersWrap[hidden]{display:none}
+.mode{font-size:12.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:6px}
+.mode i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.mode.live i{background:var(--leaf);box-shadow:0 0 0 3px color-mix(in srgb,var(--leaf) 20%,transparent)}
+.reqs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.reqs:empty{display:none}
+.req{display:flex;align-items:center;gap:10px;background:var(--warn-bg);border:1px solid #efd2a1;color:var(--warn);border-radius:10px;padding:8px 8px 8px 12px;font-weight:500;animation:pop .3s ease}
+.req b{color:var(--ink)}
+.req time{font-size:12px;opacity:.8;font-weight:400}
+.req button{height:28px;border-radius:7px;border:1px solid #e3c08a;background:#fff;padding:0 10px;font-size:12.5px;font-weight:600;color:var(--warn)}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+.col{background:color-mix(in srgb,var(--panel) 55%,transparent);border:1px solid var(--rule);border-radius:14px;padding:12px;min-height:180px}
+.col h3{margin:0 0 10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);display:flex;justify-content:space-between}
+.col .list{display:flex;flex-direction:column;gap:10px}
+.col .empty{font-size:13px;color:var(--ink-3);text-align:center;padding:28px 0;border:1px dashed var(--rule-2);border-radius:10px}
+.order{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.order.fresh{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:pop .35s ease}
+.order header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+.order header b{font-family:var(--serif);font-weight:500;font-size:20px;white-space:nowrap}
+.order time{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;text-align:right}
+.order time.late{color:var(--chili);font-weight:600}
+.order ul{list-style:none;margin:0;padding:0;font-size:14px}
+.order li{display:flex;gap:8px;padding:3px 0}
+.order li .q{font-weight:600;min-width:24px;font-variant-numeric:tabular-nums}
+.order li .p{margin-left:auto;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.onote{margin:8px 0 0;font-size:13px;background:var(--sunk);border-left:3px solid var(--accent);padding:6px 10px;border-radius:4px;font-style:italic}
+.order footer{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--rule)}
+.order footer strong{margin-right:auto;font-variant-numeric:tabular-nums}
+.order footer .btn{height:32px;font-size:13px;padding:0 10px}
+.closed{margin-top:18px}
+.closed summary{cursor:pointer;color:var(--ink-2);font-weight:500;padding:6px 0}
+.closed .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:8px}
+.closed .order{opacity:.7}
+.tagx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.login{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:22px;max-width:380px;display:flex;flex-direction:column;gap:12px}
+.login[hidden]{display:none}
+.login h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:0}
+.login p{margin:0;color:var(--ink-2);font-size:13px}
+.lerr{color:var(--chili)!important}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+@media (max-width:860px){.board{grid-template-columns:1fr}}
+
 /* ---------- Publish dialog ---------- */
 .scrim{position:fixed;inset:0;background:rgba(20,15,10,.4);z-index:40;display:grid;place-items:center;padding:20px}
 .scrim[hidden]{display:none}
@@ -156,7 +202,8 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     <button class="btn primary" id="publishBtn" disabled>Publish…</button>
   </div>
   <nav class="tabs" role="tablist">
-    <button role="tab" data-view="menu" aria-selected="true">Menu</button>
+    <button role="tab" data-view="orders" aria-selected="true">Orders <span class="tab-badge" id="ordBadge" hidden></span></button>
+    <button role="tab" data-view="menu" aria-selected="false">Menu</button>
     <button role="tab" data-view="tables" aria-selected="false">Tables &amp; QR codes</button>
     <button role="tab" data-view="details" aria-selected="false">Restaurant details</button>
   </nav>
@@ -165,8 +212,36 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 <main>
   <div class="stats" id="stats"></div>
 
+  <!-- ORDERS -->
+  <section class="view" id="view-orders">
+    <div class="toolbar">
+      <h2>Orders</h2>
+      <span class="mode" id="modeNote"></span>
+      <button class="btn quiet" id="soundBtn" aria-pressed="true">Sound on</button>
+      <button class="btn quiet" id="clearDemo" hidden>Clear demo orders</button>
+      <button class="btn quiet" id="signOut" hidden>Sign out</button>
+    </div>
+    <form class="login" id="login" hidden>
+      <h3>Staff sign-in</h3>
+      <p>Use the staff email and password created in Supabase → Authentication.</p>
+      <label class="field">Email<input type="email" id="lEmail" autocomplete="username" required></label>
+      <label class="field">Password<input type="password" id="lPass" autocomplete="current-password" required></label>
+      <p class="lerr" id="lErr" hidden></p>
+      <button class="btn primary" type="submit">Sign in</button>
+    </form>
+    <div id="ordersWrap">
+      <div class="reqs" id="reqs"></div>
+      <div class="board">
+        <div class="col" data-col="new"><h3>New <span class="n"></span></h3><div class="list"></div></div>
+        <div class="col" data-col="preparing"><h3>Preparing <span class="n"></span></h3><div class="list"></div></div>
+        <div class="col" data-col="served"><h3>Served <span class="n"></span></h3><div class="list"></div></div>
+      </div>
+      <details class="closed"><summary id="closedSum">Closed today</summary><div class="list" id="closedList"></div></details>
+    </div>
+  </section>
+
   <!-- MENU -->
-  <section class="view" id="view-menu">
+  <section class="view" id="view-menu" hidden>
     <div class="toolbar">
       <h2>Dishes</h2>
       <input class="find" id="find" type="search" placeholder="Find a dish…">
@@ -216,6 +291,9 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="orders.js"></script>
 <script src="menu-data.js"></script>
 <script>
 (() => {
@@ -251,13 +329,14 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     $("#brandName").textContent = menu.venue.restaurant || "Untitled";
   }
 
+  let openCount = 0;
   function renderStats() {
     const all = menu.sections.flatMap(s => s.items);
     const off = all.filter(i => i.available === false).length;
     const c = store.get(CARDS) || {};
     const tables = Math.max(0, (+c.to || 12) - (+c.from || 1) + 1);
     $("#stats").innerHTML = [
-      ["Dishes", all.length], ["Sold out today", off], ["Sections", menu.sections.length], ["Tables with QR", tables]
+      ["Open orders", openCount], ["Dishes", all.length], ["Sold out today", off], ["Tables with QR", tables]
     ].map(([k, v]) => `<div class="stat"><small>${k}</small><b>${v}</b></div>`).join("");
   }
 
@@ -463,6 +542,100 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 
   let tt;
   function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2600); }
+
+  /* ---------- Orders ---------- */
+  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(n || 0);
+  const NEXT = { new: ["preparing", "Start preparing"], preparing: ["served", "Mark served"], served: ["done", "Close bill"] };
+  let orders = [], seen = null, soundOn = true, actx = null;
+  try { soundOn = localStorage.getItem("admin-sound") !== "off"; } catch {}
+  const setSoundBtn = () => { $("#soundBtn").textContent = soundOn ? "Sound on" : "Sound off"; $("#soundBtn").setAttribute("aria-pressed", soundOn); };
+  setSoundBtn();
+  $("#soundBtn").onclick = () => { soundOn = !soundOn; try { localStorage.setItem("admin-sound", soundOn ? "on" : "off"); } catch {} setSoundBtn(); if (soundOn) chime(); };
+  document.addEventListener("pointerdown", () => { if (!actx) try { actx = new AudioContext(); } catch {} }, { once: true });
+  function chime() {
+    if (!soundOn || !actx) return;
+    [880, 1320].forEach((f, k) => {
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + k * 0.16;
+      o.frequency.value = f; o.type = "sine"; o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.start(t); o.stop(t + 0.55);
+    });
+  }
+  const ago = iso => { const m = Math.floor((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.floor(m / 60) + " h " + (m % 60) + " min ago"; };
+  const clock = iso => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  function orderCard(o, fresh) {
+    const mins = (Date.now() - Date.parse(o.created_at)) / 60000;
+    const late = (o.status === "new" || o.status === "preparing") && mins > 20;
+    const nx = NEXT[o.status];
+    const actions = o.status === "done" ? `<span class="tagx">Closed</span>`
+      : o.status === "cancelled" ? `<span class="tagx">Cancelled</span>`
+      : `<button class="btn quiet" data-st="cancelled" title="Cancel order">Cancel</button><button class="btn primary" data-st="${nx[0]}">${nx[1]}</button>`;
+    return `<article class="order${fresh ? " fresh" : ""}" data-id="${esc(o.id)}">
+      <header><b>Table ${esc(o.table_no)}</b><time class="${late ? "late" : ""}">${clock(o.created_at)} · ${ago(o.created_at)}</time></header>
+      <ul>${(o.items || []).map(i => `<li><span class="q">${+i.qty}×</span><span>${esc(i.name)}</span><span class="p">${i.price == null ? "MP" : inr(i.price * i.qty)}</span></li>`).join("")}</ul>
+      ${o.note ? `<p class="onote">“${esc(o.note)}”</p>` : ""}
+      <footer><strong>${inr(o.subtotal)}</strong>${actions}</footer></article>`;
+  }
+
+  function renderOrders() {
+    const isNew = o => seen && !seen.has(o.id);
+    if (orders.some(isNew)) chime();
+    const reqs = orders.filter(o => o.kind === "request" && o.status === "new");
+    $("#reqs").innerHTML = reqs.map(r => `<div class="req" data-id="${esc(r.id)}"><span><b>Table ${esc(r.table_no)}</b> · ${esc(r.note || "Assistance")}</span><time>${ago(r.created_at)}</time><button data-st="done">Done</button></div>`).join("");
+    const food = orders.filter(o => o.kind !== "request");
+    ["new", "preparing", "served"].forEach(st => {
+      const col = document.querySelector(`.col[data-col="${st}"]`), list = food.filter(o => o.status === st);
+      col.querySelector(".n").textContent = list.length || "";
+      col.querySelector(".list").innerHTML = list.map(o => orderCard(o, isNew(o))).join("") ||
+        `<div class="empty">${st === "new" ? "Waiting for orders…" : "Nothing here"}</div>`;
+    });
+    const closed = food.filter(o => o.status === "done" || o.status === "cancelled").reverse();
+    const takings = closed.filter(o => o.status === "done").reduce((a, o) => a + (o.subtotal || 0), 0);
+    $("#closedSum").textContent = `Closed today (${closed.length}) · ${inr(takings)} before tax`;
+    $("#closedList").innerHTML = closed.map(o => orderCard(o)).join("");
+    const waiting = food.filter(o => o.status === "new").length + reqs.length;
+    openCount = food.filter(o => ["new", "preparing", "served"].includes(o.status)).length;
+    $("#ordBadge").hidden = !waiting; $("#ordBadge").textContent = waiting;
+    document.title = (waiting ? `(${waiting}) ` : "") + "Menu Admin";
+    seen = new Set(orders.map(o => o.id));
+    renderStats();
+  }
+
+  async function loadOrders() {
+    try { orders = await window.Orders.list(); renderOrders(); }
+    catch (e) { console.error(e); $("#reqs").innerHTML = `<p class="note">Couldn't load orders: ${esc(e.message || e)}</p>`; }
+  }
+  $("#view-orders").addEventListener("click", async e => {
+    const b = e.target.closest("[data-st]"); if (!b) return;
+    const id = b.closest("[data-id]").dataset.id;
+    if (b.dataset.st === "cancelled" && !confirm("Cancel this order?")) return;
+    b.disabled = true;
+    try { await window.Orders.setStatus(id, b.dataset.st); if (window.Orders.live) await loadOrders(); }
+    catch (err) { b.disabled = false; toast("Couldn't update: " + (err.message || err)); }
+  });
+
+  async function startOrders() {
+    const live = window.Orders.live;
+    $("#modeNote").className = "mode" + (live ? " live" : "");
+    $("#modeNote").innerHTML = live ? "<i></i>Live: orders from every table" : "<i></i>Demo mode: only orders placed in this browser show up";
+    $("#clearDemo").hidden = live;
+    $("#clearDemo").onclick = () => { if (confirm("Delete all demo orders?")) window.Orders.clearDemo(); };
+    if (live && !(await window.Orders.session())) {
+      $("#login").hidden = false; $("#ordersWrap").hidden = true;
+      $("#login").onsubmit = async ev => {
+        ev.preventDefault(); $("#lErr").hidden = true;
+        try { await window.Orders.signIn($("#lEmail").value, $("#lPass").value); location.reload(); }
+        catch (err) { $("#lErr").textContent = err.message || "Sign-in failed"; $("#lErr").hidden = false; }
+      };
+      return;
+    }
+    $("#signOut").hidden = !live; $("#signOut").onclick = () => window.Orders.signOut();
+    window.Orders.subscribe(loadOrders);
+    await loadOrders();
+    setInterval(renderOrders, 30000);   // keep "x min ago" fresh
+  }
+  startOrders();
 
   renderMenu(); renderStats(); status(JSON.stringify(menu) !== published);
   let tab; try { tab = sessionStorage.getItem("admin-tab"); } catch {}
