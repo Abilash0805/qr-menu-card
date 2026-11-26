@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f3ede2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)">
-<title>Kaveri — Menu</title>
+<title>Sample — Menu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -135,6 +135,9 @@ h1{
 }
 .item.in-list .added{display:inline-flex}
 .item.in-list .name{color:var(--accent)}
+.item.sold-out .name,.item.sold-out .desc{opacity:.45}
+.item.sold-out .leader{opacity:.2}
+.draft-banner{background:var(--accent);color:var(--accent-ink);text-align:center;font-size:13px;padding:8px 16px;font-weight:500}
 .empty{padding:60px 0;text-align:center;color:var(--ink-2)}
 .empty b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;color:var(--ink);margin-bottom:4px}
 
@@ -325,6 +328,10 @@ h1{
 
 <script src="menu-data.js"></script>
 <script>
+/* Admin preview: unpublished edits saved in this browser by admin.html */
+try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSON.parse(d); window.MENU_IS_DRAFT = true; } } catch {}
+</script>
+<script>
 (() => {
   const { venue, sections } = window.MENU;
   const $ = s => document.querySelector(s);
@@ -342,29 +349,29 @@ h1{
 
   /* ---- Static copy ---- */
   document.title = `${venue.restaurant} — Menu`;
-  $("#hotel").textContent = `${venue.hotel} · ${venue.city}`;
+  $("#hotel").textContent = [venue.hotel, venue.city].filter(Boolean).join(" · ") || "Digital menu";
   $("#restaurant").textContent = venue.restaurant;
   $("#tagline").textContent = venue.tagline;
   $("#hours").textContent = venue.hours;
   $("#footnote").textContent = venue.footnote;
-  $("#colophon").textContent = `Thank you for dining with us at ${venue.hotel}.`;
+  $("#colophon").textContent = `Thank you for dining with us${venue.hotel ? " at " + venue.hotel : ""}.`;
   $("#wifi").innerHTML = `<span>Wi-Fi <b>${esc(venue.wifi.name)}</b></span><span>Password <b>${esc(venue.wifi.password)}</b></span>`;
   if (table) { const c = $("#tableChip"); c.hidden = false; c.textContent = `Table ${table}`; }
 
   /* ---- Shortlist (per table, survives reloads in this tab) ---- */
-  const KEY = `kaveri-list-${table || "x"}`;
+  const KEY = `qrmenu-list-${table || "x"}`;
   let list = {};
   try { list = JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch {}
   const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
 
   /* ---- Render ---- */
   const spiceDots = n => n ? `<span class="spice" title="${SPICE[n]}" aria-label="${SPICE[n]}">${[1,2,3].map(i => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</span>` : "";
-  const priceHtml = i => i.price == null ? `<span class="price mp">${esc(i.priceNote || "Ask")}</span>` : `<span class="price">${inr(i.price)}</span>`;
+  const priceHtml = i => i.available === false ? `<span class="price mp">Sold out</span>` : i.price == null ? `<span class="price mp">${esc(i.priceNote || "Ask")}</span>` : `<span class="price">${inr(i.price)}</span>`;
 
   function itemHtml(i) {
     const tags = i.tags.map(t => `<span class="tag">${TAGS[t]}</span>`).join("");
     const allergens = i.allergens.length ? `<span class="allergens">Contains ${i.allergens.join(", ")}</span>` : "";
-    return `<li class="item${list[i.id] ? " in-list" : ""}" data-id="${i.id}">
+    return `<li class="item${list[i.id] ? " in-list" : ""}${i.available === false ? " sold-out" : ""}" data-id="${i.id}">
       <button class="item-btn" aria-label="${esc(i.name)}, ${i.price ? inr(i.price) : "market price"}">
         <div class="item-row">
           <i class="diet ${i.diet}" title="${DIET[i.diet]}"></i>
@@ -458,10 +465,13 @@ h1{
         <dt>Allergens</dt><dd>${i.allergens.length ? esc(i.allergens.join(", ")) : "None declared"}</dd>
         <dt>Price</dt><dd style="font-variant-numeric:tabular-nums">${i.price == null ? esc(i.priceNote) : inr(i.price)}</dd>
       </dl></div>`;
+    $("#detailAdd").disabled = i.available === false;
+    if (i.available === false) $("#detailAdd").innerHTML = "<span>Sold out for today</span>"; else
     $("#detailAdd").innerHTML = list[i.id] ? `<span>In your list ×${list[i.id]}</span><span>Add another</span>` : `<span>Add to my list</span><span>${i.price == null ? "" : inr(i.price)}</span>`;
     open($("#detailSheet"));
   });
   $("#detailAdd").addEventListener("click", () => {
+    if (current.available === false) return;
     list[current.id] = (list[current.id] || 0) + 1;
     save(); close(); refresh();
     toast(`${current.name} added to your list`);
@@ -531,6 +541,7 @@ h1{
     clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 2600);
   }
 
+  if (window.MENU_IS_DRAFT) document.body.insertAdjacentHTML("afterbegin", `<div class="draft-banner">Preview: unpublished changes from the admin page (only you can see this)</div>`);
   render(); refresh();
 })();
 </script>

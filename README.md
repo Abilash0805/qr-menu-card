@@ -1,29 +1,26 @@
 # QR Menu Card — sample
 
-A guest-facing digital menu plus printable table QR cards, for a fictional restaurant ("Kaveri" at Hotel Aranya, Fort Kochi).
+A guest menu that opens when a table's QR code is scanned, an admin page for the restaurant, and printable table QR cards.
 
-| File | What it is |
-|---|---|
-| `index.html` | The menu guests see after scanning. Reads the table number from the link (`?t=7`). |
-| `tables.html` | Generates A6 table cards (4 per A4) with a QR code per table. Print from the browser. |
-| `menu-data.js` | All restaurant details, sections, dishes and prices. Edit this one file to rebrand. |
+**Live:** https://abilash0805.github.io/qr-menu-card/
 
-## Run it
+| Page | Who it's for | What it does |
+|---|---|---|
+| `index.html` (`/?t=7`) | Guests | The menu. Reads the table number from the QR link. |
+| `admin.html` | Restaurant staff | Edit dishes, prices and sections, mark dishes sold out, change restaurant details, view or download each table's QR code. |
+| `tables.html` | Restaurant staff | Print A6 table cards with QR codes, 4 per A4 sheet. |
+| `menu-data.js` | — | The published menu. Everything reads from this file. |
 
+## How editing works
+This is a static site with no server or database:
+1. Edits in `admin.html` are saved in **that browser only**. "Preview menu" shows them with a banner so you can check before going live.
+2. **Publish…** downloads a new `menu-data.js`. Upload it to the GitHub repo (Add file → Upload files → Commit) and the live menu updates in about a minute.
+3. QR codes never change, so you never reprint the cards.
+
+The admin page has no login. That's harmless here, because a visitor's edits only stay in their own browser, but a real deployment would need a backend with staff login (for example Supabase) so edits go live instantly.
+
+## Run locally
 ```
 python -m http.server 8000
 ```
-
-- Menu: http://localhost:8000/?t=7
-- Table cards: http://localhost:8000/tables.html
-
-**Test on a phone:** keep the phone on the same Wi-Fi, open `tables.html`, and change "Menu address" to `http://<this-PC's-IP>:8000/` (run `ipconfig` to find it). Then scan a card on screen. Windows may ask you to allow Python through the firewall.
-
-**For real tables:** host the folder somewhere public (Netlify Drop, Vercel, GitHub Pages), put that address into "Menu address" and print.
-
-## Guest menu features
-- Section tabs that follow your scroll, search, and a veg-only filter
-- Indian veg / egg / non-veg markers, heat level, allergens, Chef's pick and Signature tags
-- Tap a dish for details and add it to a personal list with an estimated total including GST (this is not an order; guests show it to the server)
-- "Server" button for water, the bill, cutlery or a call. **In this sample it only shows a confirmation.** Connecting it to staff needs a small backend.
-- Follows the phone's light/dark setting
+Then open http://localhost:8000/admin.html

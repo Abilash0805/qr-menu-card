@@ -9,12 +9,10 @@
 */
 window.MENU = {
   venue: {
-    hotel: "Hotel Aranya",
-    city: "Fort Kochi",
-    restaurant: "Kaveri",
+    restaurant: "Sample",
     tagline: "Coastal kitchen & bar",
     hours: "Lunch 12:00–15:30 · Dinner 19:00–23:00",
-    wifi: { name: "Aranya-Guest", password: "monsoon2026" },
+    wifi: { name: "Sample-Guest", password: "welcome2026" },
     footnote:
       "All prices in Indian Rupees and exclusive of 5% GST. A discretionary service charge is not levied. Please tell your server about any allergies before ordering — our kitchen handles nuts, gluten, dairy and shellfish."
   },

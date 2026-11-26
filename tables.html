@@ -134,7 +134,7 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans);
 <section class="howto">
   <h2>Putting these on tables</h2>
   <ol>
-    <li>Host the folder anywhere public (Netlify, Vercel, GitHub Pages, your hotel's own site) and paste that address above. The QR codes update instantly.</li>
+    <li>Host the folder anywhere public (Netlify, Vercel, GitHub Pages, your own website) and paste that address above. The QR codes update instantly.</li>
     <li>Scan one card with your phone before printing the batch — check it opens the right table.</li>
     <li>Print on 300–350 gsm matte card at 100% scale (no "fit to page"), then cut along the card edges.</li>
     <li>Slide each card into an acrylic A6 stand. Keep the code at least 4 cm wide so older phones read it from a seated position.</li>
@@ -143,6 +143,10 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans);
 </section>
 
 <script src="menu-data.js"></script>
+<script>
+/* Admin preview: unpublished edits saved in this browser by admin.html */
+try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSON.parse(d); window.MENU_IS_DRAFT = true; } } catch {}
+</script>
 <script>
 (() => {
   const { venue } = window.MENU;
@@ -196,7 +200,7 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans);
       const label = String(n).padStart(2, "0");
       const href = linkFor(base, n);
       cards.push(`<article class="card" title="${href}">
-        <div class="hotel">${venue.hotel}</div>
+        <div class="hotel">${venue.hotel || "Welcome"}</div>
         ${mark}
         <div class="name">${venue.restaurant}</div>
         <div class="tag">${venue.tagline}</div>
