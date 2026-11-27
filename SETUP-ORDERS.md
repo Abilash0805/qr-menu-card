@@ -1,3 +1,7 @@
+# Live mode setup (Supabase)
+
+> **This project is already connected** to the Supabase project `qr-menu-card` (Mumbai). The steps below are for setting up a fresh copy for another restaurant.
+
 # Turning on live orders (about 10 minutes, free)
 
 Out of the box the site runs in **demo mode**: orders only show up in the same browser where they were placed (open the menu and the admin in two tabs to see it work). To receive orders from every guest's phone, connect a free Supabase database.
@@ -5,7 +9,7 @@ Out of the box the site runs in **demo mode**: orders only show up in the same b
 ## 1. Create the database
 1. Sign in at https://supabase.com and click **New project**. The free plan is enough. Pick the region closest to you (Mumbai for India).
 2. When it's ready, open **SQL Editor → New query**.
-3. Open `supabase-schema.sql` from this folder and change `owner@example.com` to the email you'll use as staff login.
+3. Open `supabase/schema.sql` from this folder and change `owner@example.com` to the email you'll use as staff login.
 4. Paste the whole file into the editor and click **Run**.
 
 ## 2. Create the staff login

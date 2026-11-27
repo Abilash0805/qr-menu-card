@@ -7,24 +7,20 @@ A guest menu that opens when a table's QR code is scanned, an admin page for the
 | Page | Who it's for | What it does |
 |---|---|---|
 | `index.html` (`/?t=7`) | Guests | The menu. Reads the table number from the QR link. |
-| `admin.html` | Restaurant staff | **Orders dashboard** (live), edit dishes, prices and sections, mark dishes sold out, change restaurant details, view or download each table's QR code. |
+| `admin.html` | Restaurant staff (login) | Live orders board, menu editor with instant publish and sold-out switches, Sales analytics, table QR codes, restaurant details. |
 | `tables.html` | Restaurant staff | Print A6 table cards with QR codes, 4 per A4 sheet. |
-| `menu-data.js` | — | The published menu. Everything reads from this file. |
-| `config.js`, `orders.js`, `supabase-schema.sql` | — | Ordering backend. See **SETUP-ORDERS.md** to switch from demo mode to live orders. |
+| `config.js` | — | Supabase connection (public anon key). Empty = demo mode. |
+| `backend.js` | — | Data layer used by every page (live Supabase or demo storage). |
+| `supabase/schema.sql` | — | Database: menu, orders, security rules, server-side order pricing. Built from `schema.template.sql` + `menu-data.js` by `node supabase/build-schema.js`. |
+| `menu-data.js` | — | Starter menu and offline fallback. |
 
-## Orders
-Guests add dishes and tap **Place order**; waiter requests (water, bill, cutlery) go through the **Server** button. Both appear in the admin's **Orders** tab with a chime.
+## How it works (live mode)
+- **Guests** scan the table QR, browse, and place orders. The server prices every order from the published menu, refuses sold-out dishes and rate-limits each table. Guests then track their order live (Received, Preparing, Served), see a running bill, and can ask for water, cutlery or the bill.
+- **Staff** sign in to `admin.html` (Supabase Auth plus an allowlist in the `staff` table). Orders arrive in real time with a chime. Menu edits go live when you press **Publish changes**, and sold-out switches go live instantly.
+- **Security:** the public key can only read the menu and call the three guest functions (`place_order`, `place_request`, `order_status`). Reading orders and editing the menu need a staff login.
+- **Adding staff:** create the user under Supabase → Authentication → Users, then run `insert into public.staff (email) values ('name@example.com');` in the SQL Editor.
 
-- **Demo mode** (default): works in a single browser. Open the menu and the admin in two tabs.
-- **Live mode**: orders from every phone. Takes about 10 minutes with a free Supabase project, see `SETUP-ORDERS.md`.
-
-## How editing works
-This is a static site with no server or database:
-1. Edits in `admin.html` are saved in **that browser only**. "Preview menu" shows them with a banner so you can check before going live.
-2. **Publish…** downloads a new `menu-data.js`. Upload it to the GitHub repo (Add file → Upload files → Commit) and the live menu updates in about a minute.
-3. QR codes never change, so you never reprint the cards.
-
-The admin page has no login. That's harmless here, because a visitor's edits only stay in their own browser, but for a real deployment menu edits should also move into the database so they go live instantly.
+Leave `config.js` empty to run in **demo mode** (one browser, no backend). See `SETUP-ORDERS.md` to set up a fresh Supabase project.
 
 ## Run locally
 ```
