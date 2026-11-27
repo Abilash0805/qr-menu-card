@@ -226,6 +226,37 @@ h1{
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* ---------- Order tracker ---------- */
+.track{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom));z-index:31;
+  display:flex;align-items:center;gap:10px;padding:10px 14px 10px 16px;border-radius:999px;
+  background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow);font-size:14px;font-weight:600;white-space:nowrap;
+}
+.track[hidden]{display:none}
+.track .pulse{width:8px;height:8px;border-radius:50%;background:var(--leaf)}
+.track.live .pulse{background:var(--accent);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+body:has(.track:not([hidden])){padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+.track-card{padding:16px 0;border-bottom:1px solid var(--rule)}
+.track-card:last-child{border-bottom:0}
+.track-card header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.track-card header b{font-family:var(--serif);font-weight:500;font-size:19px}
+.track-card header span{font-size:13px;color:var(--ink-3)}
+.steps{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.steps li{font-size:12px;color:var(--ink-3);display:flex;flex-direction:column;gap:6px;font-weight:500}
+.steps li span{height:4px;border-radius:2px;background:var(--rule)}
+.steps li.on{color:var(--ink)}
+.steps li.on span{background:var(--leaf)}
+.steps li.now span{background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 40%,transparent));background-size:200% 100%;animation:flow 1.4s linear infinite}
+@keyframes flow{from{background-position:100% 0}to{background-position:-100% 0}}
+.track-card ul{list-style:none;margin:0;padding:0;font-size:14px;color:var(--ink-2)}
+.track-card li{display:flex;gap:8px;padding:2px 0}
+.track-card li span{font-weight:600;color:var(--ink);min-width:22px}
+.track-card li em{margin-left:auto;font-style:normal;font-variant-numeric:tabular-nums}
+.tnote{margin:8px 0 0;font-size:13px;font-style:italic;color:var(--ink-3)}
+.cancelled{margin:0 0 10px;color:var(--chili);font-size:14px}
+.wifi[hidden]{display:none}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media (min-width:700px){ .masthead{padding-top:48px} }
 .masthead .topline{gap:12px}
@@ -326,45 +357,66 @@ h1{
   </div>
 </section>
 
+<button class="track" id="trackBtn" hidden>
+  <span class="pulse"></span><span id="trackLabel">Your orders</span>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>
+</button>
+
+<section class="sheet" id="ordersSheet" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
+  <div class="grab"></div>
+  <div class="sheet-head"><h3 id="ordersTitle">Your orders</h3><button class="close" data-close>Close</button></div>
+  <div class="sheet-body" id="ordersBody"></div>
+  <div class="sheet-foot" id="ordersFoot"></div>
+</section>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
-<script src="orders.js"></script>
 <script src="menu-data.js"></script>
+<script src="backend.js"></script>
 <script>
-/* Admin preview: unpublished edits saved in this browser by admin.html */
-try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSON.parse(d); window.MENU_IS_DRAFT = true; } } catch {}
-</script>
-<script>
-(() => {
-  const { venue, sections } = window.MENU;
+(async () => {
   const $ = s => document.querySelector(s);
-  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(n);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const B = window.Backend;
+  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(n || 0);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   const TAGS = { chef: "Chef's pick", signature: "Signature", new: "New", seasonal: "Seasonal" };
   const DIET = { veg: "Vegetarian", egg: "Contains egg", nonveg: "Non-vegetarian" };
   const SPICE = ["Not spicy", "Mild", "Medium", "Hot"];
-  const items = new Map(sections.flatMap(s => s.items.map(i => [i.id, { ...i, section: s.title }])));
-  const items_ = items;
 
   /* ---- Table number from the QR link: ?t=7 or ?table=7 ---- */
   const p = new URLSearchParams(location.search);
   const rawTable = (p.get("t") || p.get("table") || "").replace(/[^\w-]/g, "").slice(0, 6);
   const table = rawTable ? (/^\d+$/.test(rawTable) ? rawTable.padStart(2, "0") : rawTable.toUpperCase()) : "";
-
-  /* ---- Static copy ---- */
-  document.title = `${venue.restaurant} — Menu`;
-  $("#hotel").textContent = [venue.hotel, venue.city].filter(Boolean).join(" · ") || "Digital menu";
-  $("#restaurant").textContent = venue.restaurant;
-  $("#tagline").textContent = venue.tagline;
-  $("#hours").textContent = venue.hours;
-  $("#footnote").textContent = venue.footnote;
-  $("#colophon").textContent = `Thank you for dining with us${venue.hotel ? " at " + venue.hotel : ""}.`;
-  $("#wifi").innerHTML = `<span>Wi-Fi <b>${esc(venue.wifi.name)}</b></span><span>Password <b>${esc(venue.wifi.password)}</b></span>`;
   if (table) { const c = $("#tableChip"); c.hidden = false; c.textContent = `Table ${table}`; }
 
-  /* ---- Shortlist (per table, survives reloads in this tab) ---- */
+  /* ---- Menu (live from the database, with a local fallback) ---- */
+  let venue, sections, items = new Map(), isDraft = false;
+  function applyMenu(doc) {
+    venue = doc.venue; sections = doc.sections;
+    items = new Map(sections.flatMap(s => s.items.map(i => [i.id, { ...i, section: s.title }])));
+    document.title = `${venue.restaurant} — Menu`;
+    $("#hotel").textContent = [venue.hotel, venue.city].filter(Boolean).join(" · ") || "Digital menu";
+    $("#restaurant").textContent = venue.restaurant;
+    $("#tagline").textContent = venue.tagline || "";
+    $("#hours").textContent = venue.hours || "";
+    $("#footnote").textContent = venue.footnote || "";
+    $("#colophon").textContent = `Thank you for dining with us${venue.hotel ? " at " + venue.hotel : ""}.`;
+    $("#wifi").hidden = !venue.wifi?.name;
+    $("#wifi").innerHTML = venue.wifi?.name ? `<span>Wi-Fi <b>${esc(venue.wifi.name)}</b></span><span>Password <b>${esc(venue.wifi.password)}</b></span>` : "";
+    // drop dishes that vanished or sold out from the guest's list
+    let dropped = [];
+    for (const id of Object.keys(list)) { const i = items.get(id); if (!i || i.available === false) { dropped.push(i?.name); delete list[id]; } }
+    if (dropped.length) { save(); toast(`${dropped.filter(Boolean).join(", ") || "A dish"} just sold out and was removed from your list`); }
+    render(); refresh();
+  }
+  async function fetchMenu() {
+    try { const d = localStorage.getItem("qrmenu-draft"); if (d) { isDraft = true; return JSON.parse(d); } } catch {}
+    try { return await B.loadMenu(); } catch (e) { console.warn("menu fallback", e); return window.MENU; }
+  }
+
+  /* ---- Guest's list (per table, this tab) ---- */
   const KEY = `qrmenu-list-${table || "x"}`;
   let list = {};
   try { list = JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch {}
@@ -375,17 +427,17 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   const priceHtml = i => i.available === false ? `<span class="price mp">Sold out</span>` : i.price == null ? `<span class="price mp">${esc(i.priceNote || "Ask")}</span>` : `<span class="price">${inr(i.price)}</span>`;
 
   function itemHtml(i) {
-    const tags = i.tags.map(t => `<span class="tag">${TAGS[t]}</span>`).join("");
-    const allergens = i.allergens.length ? `<span class="allergens">Contains ${i.allergens.join(", ")}</span>` : "";
-    return `<li class="item${list[i.id] ? " in-list" : ""}${i.available === false ? " sold-out" : ""}" data-id="${i.id}">
-      <button class="item-btn" aria-label="${esc(i.name)}, ${i.price ? inr(i.price) : "market price"}">
+    const tags = (i.tags || []).map(t => TAGS[t] ? `<span class="tag">${TAGS[t]}</span>` : "").join("");
+    const allergens = i.allergens?.length ? `<span class="allergens">Contains ${esc(i.allergens.join(", "))}</span>` : "";
+    return `<li class="item${list[i.id] ? " in-list" : ""}${i.available === false ? " sold-out" : ""}" data-id="${esc(i.id)}">
+      <button class="item-btn" aria-label="${esc(i.name)}, ${i.available === false ? "sold out" : i.price ? inr(i.price) : "market price"}">
         <div class="item-row">
-          <i class="diet ${i.diet}" title="${DIET[i.diet]}"></i>
+          <i class="diet ${esc(i.diet)}" title="${DIET[i.diet] || ""}"></i>
           <span class="name">${esc(i.name)}</span>
           <span class="leader"></span>
           ${priceHtml(i)}
         </div>
-        <p class="desc">${esc(i.desc)}</p>
+        ${i.desc ? `<p class="desc">${esc(i.desc)}</p>` : ""}
         <div class="meta">${tags}${spiceDots(i.spice)}${allergens}
           <span class="added"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg>In your list${list[i.id] > 1 ? " ×" + list[i.id] : ""}</span>
         </div>
@@ -400,10 +452,10 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
     const html = sections.map(s => {
       const its = s.items.filter(i =>
         (!state.veg || i.diet === "veg") &&
-        (!q || (i.name + " " + i.desc + " " + i.allergens.join(" ")).toLowerCase().includes(q)));
+        (!q || (i.name + " " + (i.desc || "") + " " + (i.allergens || []).join(" ")).toLowerCase().includes(q)));
       shown += its.length;
       if (!its.length) return "";
-      return `<section class="section" id="${s.id}" data-title="${esc(s.title)}">
+      return `<section class="section" id="${esc(s.id)}" data-title="${esc(s.title)}">
         <div class="section-head"><h2>${esc(s.title)}</h2><span class="count">${its.length} ${its.length === 1 ? "dish" : "dishes"}</span></div>
         ${s.note ? `<p class="section-note">${esc(s.note)}</p>` : ""}
         <ul class="items">${its.map(itemHtml).join("")}</ul>
@@ -418,7 +470,7 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   let spy;
   function renderNav() {
     const present = [...document.querySelectorAll(".section")];
-    $("#cats").innerHTML = present.map(s => `<button data-target="${s.id}">${s.dataset.title}</button>`).join("");
+    $("#cats").innerHTML = present.map(s => `<button data-target="${esc(s.id)}">${esc(s.dataset.title)}</button>`).join("");
     spy?.disconnect();
     spy = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
@@ -435,7 +487,7 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   }
   $("#cats").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
-    document.getElementById(b.dataset.target).scrollIntoView({ behavior: "smooth" });
+    document.getElementById(b.dataset.target)?.scrollIntoView({ behavior: "smooth" });
   });
 
   /* ---- Filters ---- */
@@ -459,31 +511,33 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   $("#menu").addEventListener("click", e => {
     const li = e.target.closest(".item"); if (!li) return;
     current = items.get(li.dataset.id);
-    const i = current;
+    const i = current; if (!i) return;
     $("#detailBody").innerHTML = `<div class="detail">
-      <div class="tags" style="margin-top:14px"><i class="diet ${i.diet}"></i>${i.tags.map(t => `<span class="tag">${TAGS[t]}</span>`).join("")}</div>
+      <div class="tags" style="margin-top:14px"><i class="diet ${esc(i.diet)}"></i>${(i.tags || []).map(t => TAGS[t] ? `<span class="tag">${TAGS[t]}</span>` : "").join("")}</div>
       <h4>${esc(i.name)}</h4>
-      <p>${esc(i.desc)}</p>
+      ${i.desc ? `<p>${esc(i.desc)}</p>` : ""}
       <dl class="facts">
         <dt>Section</dt><dd>${esc(i.section)}</dd>
-        <dt>Diet</dt><dd>${DIET[i.diet]}</dd>
-        <dt>Heat</dt><dd>${SPICE[i.spice]}</dd>
-        <dt>Allergens</dt><dd>${i.allergens.length ? esc(i.allergens.join(", ")) : "None declared"}</dd>
-        <dt>Price</dt><dd style="font-variant-numeric:tabular-nums">${i.price == null ? esc(i.priceNote) : inr(i.price)}</dd>
+        <dt>Diet</dt><dd>${DIET[i.diet] || ""}</dd>
+        <dt>Heat</dt><dd>${SPICE[i.spice] || SPICE[0]}</dd>
+        <dt>Allergens</dt><dd>${i.allergens?.length ? esc(i.allergens.join(", ")) : "None declared"}</dd>
+        <dt>Price</dt><dd style="font-variant-numeric:tabular-nums">${i.price == null ? esc(i.priceNote || "Ask your server") : inr(i.price)}</dd>
       </dl></div>`;
-    $("#detailAdd").disabled = i.available === false;
-    if (i.available === false) $("#detailAdd").innerHTML = "<span>Sold out for today</span>"; else
-    $("#detailAdd").innerHTML = list[i.id] ? `<span>In your list ×${list[i.id]}</span><span>Add another</span>` : `<span>Add to my list</span><span>${i.price == null ? "" : inr(i.price)}</span>`;
+    const add = $("#detailAdd");
+    add.disabled = i.available === false;
+    add.innerHTML = i.available === false ? "<span>Sold out for today</span>"
+      : list[i.id] ? `<span>In your list ×${list[i.id]}</span><span>Add another</span>`
+      : `<span>Add to my order</span><span>${i.price == null ? "" : inr(i.price)}</span>`;
     open($("#detailSheet"));
   });
   $("#detailAdd").addEventListener("click", () => {
-    if (current.available === false) return;
-    list[current.id] = (list[current.id] || 0) + 1;
+    if (!current || current.available === false) return;
+    list[current.id] = Math.min(20, (list[current.id] || 0) + 1);
     save(); close(); refresh();
-    toast(`${current.name} added to your list`);
+    toast(`${current.name} added`);
   });
 
-  /* List */
+  /* ---- The order being built ---- */
   function totals() {
     let n = 0, sum = 0, market = false;
     for (const [id, q] of Object.entries(list)) { const i = items.get(id); if (!i) continue; n += q; if (i.price == null) market = true; else sum += i.price * q; }
@@ -494,8 +548,8 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
     const b = $("#listBtn");
     b.disabled = !n;
     b.innerHTML = n
-      ? `<span style="display:flex;gap:10px;align-items:center"><span class="badge">${n}</span>View my list</span><span class="total">${inr(sum)}${market ? "+" : ""}</span>`
-      : `<span>Tap a dish to save it</span>`;
+      ? `<span style="display:flex;gap:10px;align-items:center"><span class="badge">${n}</span>Review order</span><span class="total">${inr(sum)}${market ? "+" : ""}</span>`
+      : `<span>Tap a dish to add it</span>`;
     document.querySelectorAll(".item").forEach(li => {
       const q = list[li.dataset.id];
       li.classList.toggle("in-list", !!q);
@@ -507,11 +561,12 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   function renderList() {
     const rows = Object.entries(list).filter(([id]) => items.has(id));
     if (!rows.length) { close(); return; }
+    $("#listTitle").textContent = "Your order";
     $("#listBody").innerHTML = rows.map(([id, q]) => {
       const i = items.get(id);
-      return `<div class="line" data-id="${id}">
-        <i class="diet ${i.diet}"></i>
-        <div class="ln"><b>${esc(i.name)}</b><small>${i.price == null ? esc(i.priceNote) : inr(i.price) + (q > 1 ? " each" : "")}</small></div>
+      return `<div class="line" data-id="${esc(id)}">
+        <i class="diet ${esc(i.diet)}"></i>
+        <div class="ln"><b>${esc(i.name)}</b><small>${i.price == null ? esc(i.priceNote || "Market price") : inr(i.price) + (q > 1 ? " each" : "")}</small></div>
         <div class="stepper"><button data-d="-1" aria-label="One less">−</button><span>${q}</span><button data-d="1" aria-label="One more">+</button></div>
       </div>`;
     }).join("");
@@ -522,18 +577,20 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
       <div class="sum small"><span>GST 5%</span><span>${inr(gst)}</span></div>
       <div class="sum big"><span>Estimated total</span><span>${inr(sum + gst)}${market ? "+" : ""}</span></div>
       <textarea class="knote" id="knote" maxlength="300" placeholder="Note for the kitchen (optional), e.g. less spicy"></textarea>
-      <p class="hint">${table ? `Your order goes straight to the kitchen for table ${table}. You pay at the end of your meal.` : "Scan the QR code on your table to place an order. You can still show this list to your server."}${market ? " Market-price dishes are confirmed at the table." : ""}</p>
+      <p class="hint">${table ? `Goes straight to the kitchen for table ${table}. You pay at the end of your meal.` : "Scan the QR code on your table to place an order."}${market ? " Market-price dishes are confirmed at the table." : ""}</p>
       <button class="btn btn-primary full" id="readyBtn" ${table ? "" : "disabled"}>Place order · ${inr(sum)}${market ? "+" : ""}</button>`;
     $("#readyBtn").onclick = async e => {
-      const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Sending…";
-      const items = Object.entries(list).filter(([id]) => items_.has(id)).map(([id, qty]) => { const i = items_.get(id); return { id, name: i.name, qty, price: i.price }; });
+      const btn = e.currentTarget; btn.disabled = true; btn.textContent = "Sending to the kitchen…";
+      const lines = Object.entries(list).filter(([id]) => items.has(id)).map(([id, qty]) => ({ id, qty }));
       try {
-        await window.Orders.place({ table, kind: "order", items, subtotal: sum, note: $("#knote").value.trim() });
+        const o = await B.placeOrder({ table, items: lines, note: $("#knote").value.trim() });
+        track(o.id);
         list = {}; save(); close(); refresh();
         toast(`Order sent to the kitchen — table ${table}`);
+        pollNow();
       } catch (err) {
         console.error(err); btn.disabled = false; btn.textContent = "Try again";
-        toast("Couldn't send your order. Please call your server.");
+        toast(B.errText(err).replace(/^.*?:\s/, "") || "Couldn't send your order. Please call your server.");
       }
     };
   }
@@ -541,30 +598,95 @@ try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSO
   $("#listBody").addEventListener("click", e => {
     const b = e.target.closest("[data-d]"); if (!b) return;
     const id = b.closest(".line").dataset.id;
-    list[id] = (list[id] || 0) + Number(b.dataset.d);
+    list[id] = Math.min(20, (list[id] || 0) + Number(b.dataset.d));
     if (list[id] <= 0) delete list[id];
     save(); refresh();
   });
 
-  /* Service */
-  $("#callBtn").addEventListener("click", () => open($("#svcSheet")));
-  $("#svcSheet").addEventListener("click", e => {
-    const b = e.target.closest("[data-svc]"); if (!b) return;
+  /* ---- Order tracking ---- */
+  const MINE = `qrmenu-mine-${table || "x"}`;
+  const SIX_H = 6 * 3600e3;
+  const getMine = () => { try { return (JSON.parse(localStorage.getItem(MINE)) || []).filter(m => Date.now() - m.at < SIX_H); } catch { return []; } };
+  const track = id => { try { localStorage.setItem(MINE, JSON.stringify([...getMine(), { id, at: Date.now() }].slice(-20))); } catch {} };
+  let mine = [], lastStatus = {};
+  const STEPS = [["new", "Received"], ["preparing", "Preparing"], ["served", "Served"]];
+  const LABEL = { new: "Received", preparing: "Preparing", served: "Served", done: "Paid", cancelled: "Cancelled" };
+
+  async function pollNow() {
+    const ids = getMine().map(m => m.id);
+    if (!ids.length) { mine = []; renderTracker(); return; }
+    try { mine = await B.orderStatus(ids); } catch (e) { console.warn(e); return; }
+    for (const o of mine) {
+      if (lastStatus[o.id] && lastStatus[o.id] !== o.status) {
+        if (o.status === "preparing") toast("The kitchen has started on your order");
+        if (o.status === "served") toast("Your order is on its way to the table");
+        if (o.status === "cancelled") toast("An order was cancelled. Please ask your server.");
+        navigator.vibrate?.(80);
+      }
+      lastStatus[o.id] = o.status;
+    }
+    renderTracker();
+  }
+  function renderTracker() {
+    const active = mine.filter(o => o.status !== "cancelled");
+    const btn = $("#trackBtn");
+    btn.hidden = !mine.length;
+    const cooking = active.filter(o => o.status === "new" || o.status === "preparing").length;
+    $("#trackLabel").textContent = !mine.length ? "" :
+      cooking ? `${cooking} order${cooking > 1 ? "s" : ""} ${active.some(o => o.status === "preparing") ? "being prepared" : "received"}` : "Your orders · all served";
+    btn.classList.toggle("live", cooking > 0);
+    if (openSheet === $("#ordersSheet")) renderOrdersSheet();
+  }
+  function renderOrdersSheet() {
+    const clock = iso => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    $("#ordersBody").innerHTML = mine.slice().reverse().map((o, k) => {
+      const idx = STEPS.findIndex(s => s[0] === o.status);
+      const steps = o.status === "cancelled" ? `<p class="cancelled">This order was cancelled. Please ask your server.</p>` :
+        `<ol class="steps">${STEPS.map(([s, l], n) => `<li class="${o.status === "done" || n <= idx ? "on" : ""}${n === idx && o.status !== "done" ? " now" : ""}"><span></span>${l}</li>`).join("")}</ol>`;
+      return `<article class="track-card">
+        <header><b>Order ${mine.length - k}</b><span>${clock(o.created_at)} · ${LABEL[o.status]}</span></header>
+        ${steps}
+        <ul>${(o.items || []).map(i => `<li><span>${+i.qty}×</span>${esc(i.name)}<em>${i.price == null ? "MP" : inr(i.price * i.qty)}</em></li>`).join("")}</ul>
+        ${o.note ? `<p class="tnote">“${esc(o.note)}”</p>` : ""}
+      </article>`;
+    }).join("");
+    const billable = mine.filter(o => o.status !== "cancelled");
+    const sum = billable.reduce((a, o) => a + (o.subtotal || 0), 0), gst = Math.round(sum * 0.05);
+    $("#ordersFoot").innerHTML = `
+      <div class="sum small"><span>Table ${esc(table)} so far</span><span>${inr(sum)}</span></div>
+      <div class="sum small"><span>GST 5%</span><span>${inr(gst)}</span></div>
+      <div class="sum big"><span>Bill total</span><span>${inr(sum + gst)}</span></div>
+      <button class="btn btn-primary full" id="billBtn" style="margin-top:12px">Ask for the bill</button>`;
+    $("#billBtn").onclick = () => request("Bill", "We'll bring your bill shortly");
+  }
+  $("#trackBtn").addEventListener("click", () => { renderOrdersSheet(); open($("#ordersSheet")); pollNow(); });
+  setInterval(() => { if (!document.hidden && mine.some(o => !["done", "cancelled"].includes(o.status))) pollNow(); }, 8000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) pollNow(); });
+  B.onGuestOrdersChange(pollNow);
+
+  /* ---- Service requests ---- */
+  async function request(what, ok) {
     close();
     if (!table) { toast("Scan the QR code on your table so we know where you are."); return; }
-    window.Orders.place({ table, kind: "request", note: b.dataset.req })
-      .then(() => toast(`${b.dataset.svc} — table ${table}`))
-      .catch(() => toast("Couldn't reach the staff. Please wave to a server."));
+    try { await B.placeRequest(table, what); toast(`${ok} — table ${table}`); }
+    catch (e) { console.error(e); toast("Couldn't reach the staff. Please wave to a server."); }
+  }
+  $("#callBtn").addEventListener("click", () => open($("#svcSheet")));
+  $("#svcSheet").addEventListener("click", e => {
+    const b = e.target.closest("[data-svc]"); if (b) request(b.dataset.req, b.dataset.svc);
   });
 
   let tt;
   function toast(msg) {
     const el = $("#toast"); el.textContent = msg; el.classList.add("show");
-    clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 2600);
+    clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 3000);
   }
 
-  if (window.MENU_IS_DRAFT) document.body.insertAdjacentHTML("afterbegin", `<div class="draft-banner">Preview: unpublished changes from the admin page (only you can see this)</div>`);
-  render(); refresh();
+  /* ---- Boot ---- */
+  applyMenu(await fetchMenu());
+  if (isDraft) document.body.insertAdjacentHTML("afterbegin", `<div class="draft-banner">Preview: unpublished changes from the admin page (only you can see this)</div>`);
+  else B.onMenuChange(async () => { try { applyMenu(await B.loadMenu()); } catch {} });
+  pollNow();
 })();
 </script>
 </body>

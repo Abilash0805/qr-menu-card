@@ -142,14 +142,13 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans);
   </ol>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <script src="menu-data.js"></script>
+<script src="backend.js"></script>
 <script>
-/* Admin preview: unpublished edits saved in this browser by admin.html */
-try { const d = localStorage.getItem("qrmenu-draft"); if (d) { window.MENU = JSON.parse(d); window.MENU_IS_DRAFT = true; } } catch {}
-</script>
-<script>
-(() => {
-  const { venue } = window.MENU;
+(async () => {
+  const { venue } = await window.Backend.loadMenu().catch(() => window.MENU);
   const $ = s => document.querySelector(s);
   const KEY = "qr-cards-settings";
   let saved = {};

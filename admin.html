@@ -13,7 +13,7 @@
 :root{
   --bg:#f4f1ec; --panel:#ffffff; --sunk:#faf8f4; --ink:#1f1c17; --ink-2:#5c554a; --ink-3:#8f877a;
   --rule:#e4ddd0; --rule-2:#d3c9b8; --accent:#a8462a; --accent-soft:#f6e6df;
-  --leaf:#2f6b3f; --chili:#b23a26; --egg:#c98a1b; --warn-bg:#fbefd9; --warn:#8a4b12;
+  --leaf:#2f6b3f; --leaf-soft:#e4efe6; --chili:#b23a26; --egg:#c98a1b; --warn-bg:#fbefd9; --warn:#8a4b12;
   --serif:"Fraunces", Georgia, serif; --sans:"Figtree", system-ui, sans-serif;
 }
 *{box-sizing:border-box}
@@ -21,13 +21,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-w
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 a{color:inherit}
+[hidden]{display:none!important}
+
+/* ---------- Gate ---------- */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.gate-card{background:var(--panel);border:1px solid var(--rule);border-radius:18px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 50px -30px rgba(60,40,20,.35)}
+.gate-card .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.gate-card h1{font-family:var(--serif);font-weight:400;font-size:30px;margin:6px 0 4px}
+.gate-card p{margin:0 0 20px;color:var(--ink-2)}
+.gate-card form{display:flex;flex-direction:column;gap:12px}
+.gate-card .btn{height:42px;justify-content:center}
+.err{color:var(--chili);font-size:13px;margin:0}
 
 /* ---------- Top bar ---------- */
 .top{background:var(--panel);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:10}
-.top-inner{max-width:1120px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.top-inner{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
 .brand b{font-family:var(--serif);font-weight:500;font-size:22px}
-.brand span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.brand span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 .status{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);padding:5px 10px;border-radius:999px;background:var(--sunk);border:1px solid var(--rule)}
 .status i{width:7px;height:7px;border-radius:50%;background:var(--leaf)}
 .status.dirty{background:var(--warn-bg);border-color:#efd2a1;color:var(--warn)}
@@ -39,105 +50,32 @@ a{color:inherit}
 .btn.quiet{border-color:transparent;background:none;color:var(--ink-2)}
 .btn.quiet:hover{background:var(--sunk)}
 .btn[disabled]{opacity:.45;pointer-events:none}
-.btn[hidden]{display:none}
-.tabs{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;gap:4px}
-.tabs button{border:0;background:none;padding:10px 12px 12px;font-weight:500;color:var(--ink-3);border-bottom:2px solid transparent}
+.tabs{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:none;padding:10px 12px 12px;font-weight:500;color:var(--ink-3);border-bottom:2px solid transparent;white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;margin-left:4px;vertical-align:1px}
 
-main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
-.view[hidden]{display:none}
+main{max-width:1180px;margin:0 auto;padding:22px 24px 80px}
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.toolbar h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 auto 0 0}
+.mode{font-size:12.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:6px}
+.mode i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.mode.live i{background:var(--leaf);box-shadow:0 0 0 3px var(--leaf-soft)}
+.note{font-size:13px;color:var(--warn);background:var(--warn-bg);border:1px solid #efd2a1;border-radius:8px;padding:8px 12px;margin:0 0 16px}
+.note code{background:#fff6e6;padding:0 4px;border-radius:3px}
+.field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--ink-3)}
+.field input,.field textarea,.field select{border:1px solid var(--rule-2);border-radius:8px;padding:9px 10px;background:var(--panel);font-weight:400;font-size:14px;color:var(--ink)}
+input:focus,textarea:focus,select:focus{outline:2px solid color-mix(in srgb,var(--accent) 35%,transparent);border-color:var(--accent)}
 
 /* ---------- Stats ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
 .stat{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
 .stat small{display:block;font-size:12px;color:var(--ink-3);font-weight:500}
 .stat b{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.2;font-variant-numeric:tabular-nums}
-@media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
-
-.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.toolbar h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 auto 0 0}
-.find{height:36px;border:1px solid var(--rule-2);border-radius:8px;padding:0 12px;background:var(--panel);width:220px}
-
-/* ---------- Menu editor ---------- */
-.sec{background:var(--panel);border:1px solid var(--rule);border-radius:14px;margin-bottom:16px;overflow:hidden}
-.sec-head{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--rule);background:var(--sunk);flex-wrap:wrap}
-.sec-head .t{font-family:var(--serif);font-size:19px;font-weight:500;border:1px solid transparent;background:none;padding:4px 8px;border-radius:6px;width:220px}
-.sec-head .n{flex:1;min-width:160px;border:1px solid transparent;background:none;padding:4px 8px;border-radius:6px;color:var(--ink-2);font-style:italic}
-.sec-head input:hover,.row input:hover{border-color:var(--rule)}
-.sec-head input:focus,.row input:focus,.more textarea:focus,.more input:focus,.more select:focus,.field input:focus,.field textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 35%,transparent);border-color:var(--accent)}
-.icon{width:32px;height:32px;border-radius:7px;border:0;background:none;color:var(--ink-3);display:inline-grid;place-items:center}
-.icon:hover{background:var(--panel);color:var(--ink)}
-.icon.del:hover{color:var(--chili)}
-.count{font-size:12px;color:var(--ink-3);margin-right:4px}
-
-.row{display:grid;grid-template-columns:18px 1fr 110px 112px 32px 32px;gap:10px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--rule)}
-.row:last-of-type{border-bottom:0}
-.row.off .nm{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--rule-2)}
-.row input.nm{border:1px solid transparent;background:none;padding:6px 8px;border-radius:6px;font-weight:500;min-width:0}
-.price-in{display:flex;align-items:center;border:1px solid var(--rule);border-radius:6px;padding-left:8px;background:var(--panel)}
-.price-in span{color:var(--ink-3)}
-.price-in input{border:0;background:none;width:100%;padding:6px 8px 6px 4px;font-variant-numeric:tabular-nums;outline:none}
-.diet{width:14px;height:14px;border:1.5px solid currentColor;border-radius:2px;position:relative}
-.diet::after{content:"";position:absolute;inset:2.5px;border-radius:50%;background:currentColor}
-.diet.veg{color:var(--leaf)} .diet.egg{color:var(--egg)} .diet.nonveg{color:var(--chili)}
-.diet.nonveg::after{border-radius:0;inset:auto;left:50%;top:50%;width:0;height:0;background:none;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid currentColor;transform:translate(-50%,-55%)}
-.avail{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none}
-.avail input{position:absolute;opacity:0;pointer-events:none}
-.sw{width:30px;height:18px;border-radius:9px;background:var(--rule-2);position:relative;flex:none;transition:background .15s}
-.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
-.avail input:checked + .sw{background:var(--leaf)}
-.avail input:checked + .sw::after{transform:translateX(12px)}
-.avail input:focus-visible + .sw{outline:2px solid var(--accent);outline-offset:2px}
-
-.more{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:6px 0 10px 28px}
-.more[hidden]{display:none}
-.more label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink-3)}
-.more textarea,.more input,.more select{border:1px solid var(--rule-2);border-radius:7px;padding:7px 9px;background:var(--panel);font-weight:400;font-size:14px;color:var(--ink)}
-.more textarea{grid-row:span 2;resize:vertical;min-height:84px}
-.more .wide{grid-column:1/-1}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chips label{flex-direction:row;align-items:center;gap:6px;font-weight:500;color:var(--ink-2);border:1px solid var(--rule-2);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:12.5px}
-.chips input{accent-color:var(--accent);margin:0}
-.add-row{display:flex;gap:8px;padding:10px 14px;border-top:1px dashed var(--rule)}
-.add-row button{border:0;background:none;color:var(--accent);font-weight:600;padding:4px 0}
-@media (max-width:720px){
-  .row{grid-template-columns:18px 1fr 90px 32px 32px}
-  .row .avail{grid-column:2/4;grid-row:2}
-  .more{grid-template-columns:1fr;padding-left:0}
-}
-
-/* ---------- Tables & QR ---------- */
-.qr-controls{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
-.field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--ink-3)}
-.field input,.field textarea{border:1px solid var(--rule-2);border-radius:8px;padding:8px 10px;background:var(--panel);font-weight:400;font-size:14px;color:var(--ink)}
-.field.grow{flex:1 1 280px}
-.field.num input{width:90px}
-.note{font-size:13px;color:var(--warn);background:var(--warn-bg);border:1px solid #efd2a1;border-radius:8px;padding:8px 12px;margin:0 0 16px}
-.note[hidden]{display:none}
-.note code{background:#fff6e6;padding:0 4px;border-radius:3px}
-.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.qr-card{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.qr-card .code{width:132px;height:132px;padding:6px;background:#fff;border-radius:6px}
-.qr-card .code svg{width:100%;height:100%;display:block}
-.qr-card b{font-family:var(--serif);font-weight:400;font-size:20px}
-.qr-card .url{font-size:11px;color:var(--ink-3);word-break:break-all;text-align:center;line-height:1.3}
-.qr-card .acts{display:flex;gap:6px}
-.qr-card .acts .btn{height:30px;padding:0 10px;font-size:12.5px}
-
-/* ---------- Details ---------- */
-.details{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;max-width:760px}
-.details .wide{grid-column:1/-1}
-.details textarea{min-height:90px;resize:vertical}
-.details .hint{font-weight:400;color:var(--ink-3)}
-@media (max-width:720px){.details{grid-template-columns:1fr}}
+.stat em{font-style:normal;font-size:12px;color:var(--ink-3);display:block}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 
 /* ---------- Orders ---------- */
-.tab-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;margin-left:4px;vertical-align:1px}
-.tab-badge[hidden]{display:none}
-#ordersWrap[hidden]{display:none}
-.mode{font-size:12.5px;color:var(--ink-3);display:inline-flex;align-items:center;gap:6px}
-.mode i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
-.mode.live i{background:var(--leaf);box-shadow:0 0 0 3px color-mix(in srgb,var(--leaf) 20%,transparent)}
 .reqs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .reqs:empty{display:none}
 .req{display:flex;align-items:center;gap:10px;background:var(--warn-bg);border:1px solid #efd2a1;color:var(--warn);border-radius:10px;padding:8px 8px 8px 12px;font-weight:500;animation:pop .3s ease}
@@ -168,86 +106,187 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 .closed .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:8px}
 .closed .order{opacity:.7}
 .tagx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
-.login{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:22px;max-width:380px;display:flex;flex-direction:column;gap:12px}
-.login[hidden]{display:none}
-.login h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:0}
-.login p{margin:0;color:var(--ink-2);font-size:13px}
-.lerr{color:var(--chili)!important}
 @keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
 @media (max-width:860px){.board{grid-template-columns:1fr}}
 
-/* ---------- Publish dialog ---------- */
-.scrim{position:fixed;inset:0;background:rgba(20,15,10,.4);z-index:40;display:grid;place-items:center;padding:20px}
-.scrim[hidden]{display:none}
-.dialog{background:var(--panel);border-radius:16px;max-width:520px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.dialog h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0 0 8px}
-.dialog ol{padding-left:20px;color:var(--ink-2);margin:12px 0 20px}
-.dialog li{margin-bottom:8px}
-.dialog code{background:var(--sunk);border:1px solid var(--rule);padding:0 5px;border-radius:4px;font-size:13px}
-.dialog .acts{display:flex;gap:8px;justify-content:flex-end}
+/* ---------- Menu editor ---------- */
+.find{height:36px;border:1px solid var(--rule-2);border-radius:8px;padding:0 12px;background:var(--panel);width:220px}
+.sec{background:var(--panel);border:1px solid var(--rule);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.sec-head{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--rule);background:var(--sunk);flex-wrap:wrap}
+.sec-head .t{font-family:var(--serif);font-size:19px;font-weight:500;border:1px solid transparent;background:none;padding:4px 8px;border-radius:6px;width:220px}
+.sec-head .n{flex:1;min-width:160px;border:1px solid transparent;background:none;padding:4px 8px;border-radius:6px;color:var(--ink-2);font-style:italic}
+.sec-head input:hover,.row input.nm:hover{border-color:var(--rule)}
+.icon{width:32px;height:32px;border-radius:7px;border:0;background:none;color:var(--ink-3);display:inline-grid;place-items:center}
+.icon:hover{background:var(--panel);color:var(--ink)}
+.icon.del:hover{color:var(--chili)}
+.icon[disabled]{opacity:.3;pointer-events:none}
+.count{font-size:12px;color:var(--ink-3);margin-right:4px}
+.row{display:grid;grid-template-columns:18px 1fr 110px 120px 32px 32px;gap:10px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--rule)}
+.row.off .nm{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--rule-2)}
+.row input.nm{border:1px solid transparent;background:none;padding:6px 8px;border-radius:6px;font-weight:500;min-width:0}
+.price-in{display:flex;align-items:center;border:1px solid var(--rule);border-radius:6px;padding-left:8px;background:var(--panel)}
+.price-in span{color:var(--ink-3)}
+.price-in input{border:0;background:none;width:100%;padding:6px 8px 6px 4px;font-variant-numeric:tabular-nums;outline:none}
+.diet{width:14px;height:14px;border:1.5px solid currentColor;border-radius:2px;position:relative;display:inline-block}
+.diet::after{content:"";position:absolute;inset:2.5px;border-radius:50%;background:currentColor}
+.diet.veg{color:var(--leaf)} .diet.egg{color:var(--egg)} .diet.nonveg{color:var(--chili)}
+.diet.nonveg::after{border-radius:0;inset:auto;left:50%;top:50%;width:0;height:0;background:none;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid currentColor;transform:translate(-50%,-55%)}
+.avail{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.avail input{position:absolute;opacity:0;pointer-events:none}
+.sw{width:30px;height:18px;border-radius:9px;background:var(--rule-2);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.avail input:checked + .sw{background:var(--leaf)}
+.avail input:checked + .sw::after{transform:translateX(12px)}
+.avail input:focus-visible + .sw{outline:2px solid var(--accent);outline-offset:2px}
+.more{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:6px 0 10px 28px}
+.more label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink-3)}
+.more textarea,.more input,.more select{border:1px solid var(--rule-2);border-radius:7px;padding:7px 9px;background:var(--panel);font-weight:400;font-size:14px;color:var(--ink)}
+.more textarea{grid-row:span 2;resize:vertical;min-height:84px}
+.more .wide{grid-column:1/-1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips label{flex-direction:row;align-items:center;gap:6px;font-weight:500;color:var(--ink-2);border:1px solid var(--rule-2);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:12.5px}
+.chips input{accent-color:var(--accent);margin:0}
+.add-row{display:flex;gap:8px;padding:10px 14px}
+.add-row button{border:0;background:none;color:var(--accent);font-weight:600;padding:4px 0}
+@media (max-width:760px){
+  .row{grid-template-columns:18px 1fr 90px 32px 32px}
+  .row .avail{grid-column:2/4;grid-row:2}
+  .more{grid-template-columns:1fr;padding-left:0}
+}
 
-.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,16px);opacity:0;transition:all .25s;background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;z-index:50;pointer-events:none}
+/* ---------- Tables & QR ---------- */
+.qr-controls{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+.field.grow{flex:1 1 280px}
+.field.num input{width:90px}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.qr-card{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.qr-card .code{width:132px;height:132px;padding:6px;background:#fff;border-radius:6px}
+.qr-card .code svg{width:100%;height:100%;display:block}
+.qr-card b{font-family:var(--serif);font-weight:400;font-size:20px}
+.qr-card .url{font-size:11px;color:var(--ink-3);word-break:break-all;text-align:center;line-height:1.3}
+.qr-card .acts{display:flex;gap:6px}
+.qr-card .acts .btn{height:30px;padding:0 10px;font-size:12.5px}
+
+/* ---------- Sales ---------- */
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 14px;height:34px;color:var(--ink-2);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.card .sub{margin:0 0 14px;color:var(--ink-3);font-size:12.5px}
+.hours{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px;align-items:end;height:160px;padding-top:8px}
+.hours .bar{background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;position:relative;opacity:.85}
+.hours .bar:hover{opacity:1}
+.hours .bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;margin-bottom:2px;white-space:nowrap}
+.hours-axis{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px;font-size:10.5px;color:var(--ink-3);text-align:center;margin-top:6px;border-top:1px solid var(--rule);padding-top:4px}
+.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.rank li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:13.5px}
+.rank li .track{grid-column:1/-1;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.rank li .track i{display:block;height:100%;background:var(--leaf);border-radius:3px}
+.rank li em{font-style:normal;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3);font-size:13px}
+
+/* ---------- Details ---------- */
+.details{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;max-width:760px}
+.details .wide{grid-column:1/-1}
+.details textarea{min-height:90px;resize:vertical}
+.details .hint{font-weight:400;color:var(--ink-3)}
+@media (max-width:760px){.details{grid-template-columns:1fr}}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,16px);opacity:0;transition:all .25s;background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;z-index:50;pointer-events:none;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
 
+<!-- ============ Sign-in gate (live mode) ============ -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <div class="eyebrow">Staff only</div>
+    <h1 id="gateName">Menu admin</h1>
+    <p id="gateMsg">Sign in with your staff email and password.</p>
+    <form id="loginForm">
+      <label class="field">Email<input type="email" id="lEmail" autocomplete="username" required></label>
+      <label class="field">Password<input type="password" id="lPass" autocomplete="current-password" required></label>
+      <p class="err" id="lErr" hidden></p>
+      <button class="btn primary" type="submit" id="lBtn">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ App ============ -->
+<div id="app" hidden>
 <header class="top">
   <div class="top-inner">
-    <div class="brand"><b id="brandName">Sample</b><span>Menu admin</span></div>
-    <span class="status" id="status"><i></i><span>Up to date</span></span>
+    <div class="brand"><b id="brandName">Menu</b><span>Admin</span></div>
+    <span class="status" id="status"><i></i><span>Menu is live</span></span>
     <a class="btn" href="./?t=01" target="_blank" rel="noopener">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Preview menu</a>
-    <button class="btn quiet" id="discardBtn" disabled>Discard changes</button>
-    <button class="btn primary" id="publishBtn" disabled>Publish…</button>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</a>
+    <button class="btn quiet" id="discardBtn" disabled>Discard</button>
+    <button class="btn primary" id="publishBtn" disabled>Publish changes</button>
+    <button class="btn quiet" id="signOutBtn" hidden title="Sign out">Sign out</button>
   </div>
   <nav class="tabs" role="tablist">
     <button role="tab" data-view="orders" aria-selected="true">Orders <span class="tab-badge" id="ordBadge" hidden></span></button>
     <button role="tab" data-view="menu" aria-selected="false">Menu</button>
-    <button role="tab" data-view="tables" aria-selected="false">Tables &amp; QR codes</button>
-    <button role="tab" data-view="details" aria-selected="false">Restaurant details</button>
+    <button role="tab" data-view="sales" aria-selected="false">Sales</button>
+    <button role="tab" data-view="tables" aria-selected="false">Tables &amp; QR</button>
+    <button role="tab" data-view="details" aria-selected="false">Restaurant</button>
   </nav>
 </header>
 
 <main>
-  <div class="stats" id="stats"></div>
-
   <!-- ORDERS -->
   <section class="view" id="view-orders">
+    <div class="stats" id="liveStats"></div>
     <div class="toolbar">
       <h2>Orders</h2>
       <span class="mode" id="modeNote"></span>
-      <button class="btn quiet" id="soundBtn" aria-pressed="true">Sound on</button>
+      <button class="btn quiet" id="soundBtn">Sound on</button>
       <button class="btn quiet" id="clearDemo" hidden>Clear demo orders</button>
-      <button class="btn quiet" id="signOut" hidden>Sign out</button>
     </div>
-    <form class="login" id="login" hidden>
-      <h3>Staff sign-in</h3>
-      <p>Use the staff email and password created in Supabase → Authentication.</p>
-      <label class="field">Email<input type="email" id="lEmail" autocomplete="username" required></label>
-      <label class="field">Password<input type="password" id="lPass" autocomplete="current-password" required></label>
-      <p class="lerr" id="lErr" hidden></p>
-      <button class="btn primary" type="submit">Sign in</button>
-    </form>
-    <div id="ordersWrap">
-      <div class="reqs" id="reqs"></div>
-      <div class="board">
-        <div class="col" data-col="new"><h3>New <span class="n"></span></h3><div class="list"></div></div>
-        <div class="col" data-col="preparing"><h3>Preparing <span class="n"></span></h3><div class="list"></div></div>
-        <div class="col" data-col="served"><h3>Served <span class="n"></span></h3><div class="list"></div></div>
-      </div>
-      <details class="closed"><summary id="closedSum">Closed today</summary><div class="list" id="closedList"></div></details>
+    <p class="note" id="ordersErr" hidden></p>
+    <div class="reqs" id="reqs"></div>
+    <div class="board">
+      <div class="col" data-col="new"><h3>New <span class="n"></span></h3><div class="list"></div></div>
+      <div class="col" data-col="preparing"><h3>Preparing <span class="n"></span></h3><div class="list"></div></div>
+      <div class="col" data-col="served"><h3>Served <span class="n"></span></h3><div class="list"></div></div>
     </div>
+    <details class="closed"><summary id="closedSum">Closed today</summary><div class="list" id="closedList"></div></details>
   </section>
 
   <!-- MENU -->
   <section class="view" id="view-menu" hidden>
     <div class="toolbar">
-      <h2>Dishes</h2>
+      <h2>Menu</h2>
       <input class="find" id="find" type="search" placeholder="Find a dish…">
       <button class="btn" id="addSection">+ New section</button>
     </div>
+    <p class="muted" style="margin:-6px 0 16px">Sold-out switches go live instantly. Other edits go live when you press <b>Publish changes</b>.</p>
     <div id="sections"></div>
+  </section>
+
+  <!-- SALES -->
+  <section class="view" id="view-sales" hidden>
+    <div class="toolbar">
+      <h2>Sales</h2>
+      <div class="seg" id="range">
+        <button data-days="1" aria-pressed="true">Today</button>
+        <button data-days="7" aria-pressed="false">7 days</button>
+        <button data-days="30" aria-pressed="false">30 days</button>
+      </div>
+    </div>
+    <div class="stats" id="salesStats"></div>
+    <div class="grid2">
+      <div class="card"><h3>When orders come in</h3><p class="sub" id="hoursSub">Orders by hour of day</p><div id="hours"></div></div>
+      <div class="card"><h3>Best sellers</h3><p class="sub">By portions ordered</p><ul class="rank" id="top"></ul></div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card"><h3>Busiest tables</h3><p class="sub">By spend, before tax</p><ul class="rank" id="tablesRank"></ul></div>
+      <div class="card"><h3>Service</h3><p class="sub">From order to served</p><div id="service"></div></div>
+    </div>
   </section>
 
   <!-- TABLES -->
@@ -269,78 +308,94 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
   <!-- DETAILS -->
   <section class="view" id="view-details" hidden>
     <div class="toolbar"><h2>Restaurant details</h2></div>
+    <p class="muted" style="margin:-6px 0 16px">Changes here go live when you press <b>Publish changes</b>.</p>
     <div class="details" id="details"></div>
   </section>
 </main>
-
-<div class="scrim" id="publishDlg" hidden>
-  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="pubTitle">
-    <h3 id="pubTitle">Publish your changes</h3>
-    <p style="margin:0;color:var(--ink-2)">Right now your edits are saved only in this browser. To make guests see them:</p>
-    <ol>
-      <li>Download the updated <code>menu-data.js</code> below.</li>
-      <li>Replace the old file in the site folder (on GitHub: open the repo → <b>Add file → Upload files</b> → drop it in → <b>Commit</b>).</li>
-      <li>The live menu updates in about a minute. The QR codes don't change, so no reprinting.</li>
-    </ol>
-    <div class="acts">
-      <button class="btn quiet" data-close>Cancel</button>
-      <button class="btn primary" id="downloadBtn">Download menu-data.js</button>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
-<script src="orders.js"></script>
 <script src="menu-data.js"></script>
+<script src="backend.js"></script>
 <script>
-(() => {
+(async () => {
   const $ = s => document.querySelector(s);
+  const B = window.Backend;
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  const DRAFT = "qrmenu-draft", CARDS = "qr-cards-settings";
+  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(Math.round(n || 0));
+  const clone = o => JSON.parse(JSON.stringify(o));
   const TAGS = { chef: "Chef's pick", signature: "Signature", new: "New", seasonal: "Seasonal" };
-  const store = {
-    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  const DRAFT = "qrmenu-draft", CARDS = "qr-cards-settings";
+  const ls = {
+    get(k, d = null) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
     del(k) { try { localStorage.removeItem(k); } catch {} }
   };
+  let tt;
+  function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2800); }
 
-  const published = JSON.stringify(window.MENU);
-  let menu = store.get(DRAFT) || JSON.parse(published);
-
-  /* ---------- Saving & status ---------- */
-  let saveT;
-  function changed() {
-    clearTimeout(saveT);
-    saveT = setTimeout(() => {
-      const dirty = JSON.stringify(menu) !== published;
-      dirty ? store.set(DRAFT, menu) : store.del(DRAFT);
-      status(dirty);
-    }, 250);
-    renderStats();
+  /* ============ Sign-in gate ============ */
+  if (B.live) {
+    const session = await B.session();
+    const staff = session && await B.isStaff();
+    if (!staff) {
+      $("#gate").hidden = false;
+      try { const m = await B.loadMenu(); $("#gateName").textContent = m.venue.restaurant; } catch {}
+      if (session) { $("#gateMsg").textContent = `${session.user.email} isn't on the staff list. Ask the owner to add it, or sign in with another account.`; }
+      $("#loginForm").onsubmit = async e => {
+        e.preventDefault(); $("#lErr").hidden = true; $("#lBtn").disabled = true; $("#lBtn").textContent = "Signing in…";
+        try { await B.signIn($("#lEmail").value.trim(), $("#lPass").value); location.reload(); }
+        catch (err) { $("#lErr").textContent = /invalid/i.test(B.errText(err)) ? "Wrong email or password." : B.errText(err); $("#lErr").hidden = false; $("#lBtn").disabled = false; $("#lBtn").textContent = "Sign in"; }
+      };
+      return;
+    }
+    $("#signOutBtn").hidden = false;
+    $("#signOutBtn").title = `Signed in as ${session.user.email}`;
+    $("#signOutBtn").onclick = () => B.signOut();
   }
-  function status(dirty) {
-    const s = $("#status");
-    s.classList.toggle("dirty", dirty);
-    s.lastElementChild.textContent = dirty ? "Unpublished changes" : "Up to date";
+  $("#app").hidden = false;
+
+  /* ============ Menu state ============ */
+  let published = await B.loadMenu().catch(e => { toast("Couldn't load the menu: " + B.errText(e)); return window.MENU; });
+  let menu = ls.get(DRAFT) || clone(published);
+  const isDirty = () => JSON.stringify(menu) !== JSON.stringify(published);
+
+  function status() {
+    const dirty = isDirty();
+    dirty ? ls.set(DRAFT, menu) : ls.del(DRAFT);
+    $("#status").classList.toggle("dirty", dirty);
+    $("#status").lastElementChild.textContent = dirty ? "Unpublished changes" : "Menu is live";
     $("#publishBtn").disabled = $("#discardBtn").disabled = !dirty;
-    $("#brandName").textContent = menu.venue.restaurant || "Untitled";
+    $("#brandName").textContent = menu.venue.restaurant || "Menu";
   }
+  let saveT;
+  function changed() { clearTimeout(saveT); saveT = setTimeout(status, 200); }
 
-  let openCount = 0;
-  function renderStats() {
-    const all = menu.sections.flatMap(s => s.items);
-    const off = all.filter(i => i.available === false).length;
-    const c = store.get(CARDS) || {};
-    const tables = Math.max(0, (+c.to || 12) - (+c.from || 1) + 1);
-    $("#stats").innerHTML = [
-      ["Open orders", openCount], ["Dishes", all.length], ["Sold out today", off], ["Tables with QR", tables]
-    ].map(([k, v]) => `<div class="stat"><small>${k}</small><b>${v}</b></div>`).join("");
-  }
+  $("#publishBtn").onclick = async () => {
+    const b = $("#publishBtn"); b.disabled = true; b.textContent = "Publishing…";
+    try { await B.saveMenu(menu); published = clone(menu); ls.del(DRAFT); status(); toast("Published. Every table sees the new menu now."); }
+    catch (e) { toast("Couldn't publish: " + B.errText(e)); }
+    b.textContent = "Publish changes"; status();
+  };
+  $("#discardBtn").onclick = () => {
+    if (!confirm("Throw away your unpublished changes?")) return;
+    menu = clone(published); ls.del(DRAFT); renderMenu(); renderDetails(); status();
+  };
+  B.onMenuChange(async () => {          // another staff device published
+    try {
+      const fresh = await B.loadMenu();
+      if (JSON.stringify(fresh) === JSON.stringify(published)) return;
+      const wasClean = !isDirty();
+      published = fresh;
+      if (wasClean) { menu = clone(fresh); renderMenu(); renderDetails(); }
+      status();
+    } catch {}
+  });
 
-  /* ---------- Menu editor ---------- */
+  /* ============ Menu editor ============ */
   const uid = () => "i" + Math.random().toString(36).slice(2, 8);
   const ico = {
     up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 15 6-6 6 6"/></svg>',
@@ -348,31 +403,26 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     del: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
     edit: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>'
   };
-  const open = new Set();
+  const openRows = new Set();
 
   function rowHtml(it, s, i) {
     const on = it.available !== false;
     return `<div class="row${on ? "" : " off"}" data-s="${s}" data-i="${i}">
-      <i class="diet ${it.diet}"></i>
+      <i class="diet ${esc(it.diet)}"></i>
       <input class="nm" data-f="name" value="${esc(it.name)}" aria-label="Dish name">
       <div class="price-in"><span>₹</span><input data-f="price" type="number" min="0" step="10" value="${it.price ?? ""}" placeholder="Market" aria-label="Price"></div>
       <label class="avail"><input type="checkbox" data-f="available" ${on ? "checked" : ""}><span class="sw"></span><span>${on ? "Available" : "Sold out"}</span></label>
-      <button class="icon" data-act="edit" title="More details" aria-expanded="${open.has(it.id)}">${ico.edit}</button>
+      <button class="icon" data-act="edit" title="More details" aria-expanded="${openRows.has(it.id)}">${ico.edit}</button>
       <button class="icon del" data-act="delItem" title="Delete dish">${ico.del}</button>
-      <div class="more" ${open.has(it.id) ? "" : "hidden"}>
+      <div class="more" ${openRows.has(it.id) ? "" : "hidden"}>
         <label>Description<textarea data-f="desc" rows="3">${esc(it.desc)}</textarea></label>
-        <label>Diet<select data-f="diet">
-          ${[["veg","Vegetarian"],["egg","Contains egg"],["nonveg","Non-vegetarian"]].map(([v,l]) => `<option value="${v}" ${it.diet===v?"selected":""}>${l}</option>`).join("")}
-        </select></label>
-        <label>Heat<select data-f="spice">
-          ${["Not spicy","Mild","Medium","Hot"].map((l,n) => `<option value="${n}" ${it.spice==n?"selected":""}>${l}</option>`).join("")}
-        </select></label>
+        <label>Diet<select data-f="diet">${[["veg","Vegetarian"],["egg","Contains egg"],["nonveg","Non-vegetarian"]].map(([v,l]) => `<option value="${v}" ${it.diet===v?"selected":""}>${l}</option>`).join("")}</select></label>
+        <label>Heat<select data-f="spice">${["Not spicy","Mild","Medium","Hot"].map((l,n) => `<option value="${n}" ${+it.spice===n?"selected":""}>${l}</option>`).join("")}</select></label>
         <label class="wide">Allergens <span style="font-weight:400">(comma separated)</span><input data-f="allergens" value="${esc((it.allergens||[]).join(", "))}" placeholder="e.g. nuts, dairy"></label>
         <div class="wide"><div class="chips">${Object.entries(TAGS).map(([k,l]) => `<label><input type="checkbox" data-tag="${k}" ${(it.tags||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div></div>
       </div>
     </div>`;
   }
-
   function renderMenu() {
     const q = $("#find").value.trim().toLowerCase();
     $("#sections").innerHTML = menu.sections.map((sec, s) => {
@@ -381,7 +431,7 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
       return `<section class="sec" data-s="${s}">
         <div class="sec-head">
           <input class="t" data-sf="title" value="${esc(sec.title)}" aria-label="Section name">
-          <input class="n" data-sf="note" value="${esc(sec.note || "")}" placeholder="Short note shown under the heading (optional)">
+          <input class="n" data-sf="note" value="${esc(sec.note || "")}" placeholder="Short note under the heading (optional)">
           <span class="count">${sec.items.length} dishes</span>
           <button class="icon" data-act="up" title="Move up" ${s === 0 ? "disabled" : ""}>${ico.up}</button>
           <button class="icon" data-act="down" title="Move down" ${s === menu.sections.length - 1 ? "disabled" : ""}>${ico.down}</button>
@@ -390,11 +440,19 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
         ${rows}
         <div class="add-row"><button data-act="addItem">+ Add a dish to ${esc(sec.title)}</button></div>
       </section>`;
-    }).join("") || `<p style="color:var(--ink-3)">No dishes match “${esc(q)}”.</p>`;
+    }).join("") || `<p class="muted">No dishes match “${esc(q)}”.</p>`;
   }
 
-  const sections = $("#sections");
-  sections.addEventListener("input", e => {
+  // Sold-out: publish just that switch immediately, without publishing other draft edits
+  async function setAvailableLive(id, available) {
+    const pub = clone(published);
+    for (const s of pub.sections) for (const it of s.items) if (it.id === id) it.available = available;
+    try { await B.saveMenu(pub); published = pub; status(); toast(available ? "Back on the menu" : "Marked sold out on every table"); }
+    catch (e) { toast("Couldn't update: " + B.errText(e)); }
+  }
+
+  const secs = $("#sections");
+  secs.addEventListener("input", e => {
     const t = e.target, row = t.closest(".row");
     if (t.dataset.sf) { menu.sections[t.closest(".sec").dataset.s][t.dataset.sf] = t.value; return changed(); }
     if (!row) return;
@@ -405,7 +463,8 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
       case "price": it.price = t.value === "" ? null : Math.max(0, Math.round(+t.value)); if (it.price == null) it.priceNote = it.priceNote || "Market price"; break;
       case "available":
         it.available = t.checked; row.classList.toggle("off", !t.checked);
-        t.parentElement.lastElementChild.textContent = t.checked ? "Available" : "Sold out"; break;
+        t.parentElement.lastElementChild.textContent = t.checked ? "Available" : "Sold out";
+        setAvailableLive(it.id, t.checked); break;
       case "diet": it.diet = t.value; row.querySelector(".diet").className = "diet " + t.value; break;
       case "spice": it.spice = +t.value; break;
       case "allergens": it.allergens = t.value.split(",").map(x => x.trim().toLowerCase()).filter(Boolean); break;
@@ -413,25 +472,25 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     }
     changed();
   });
-  sections.addEventListener("click", e => {
+  secs.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b) return;
     const s = +b.closest(".sec").dataset.s, row = b.closest(".row"), sec = menu.sections[s];
     switch (b.dataset.act) {
       case "edit": {
         const id = sec.items[row.dataset.i].id, more = row.querySelector(".more");
-        open.has(id) ? open.delete(id) : open.add(id);
-        more.hidden = !open.has(id); b.setAttribute("aria-expanded", open.has(id)); return;
+        openRows.has(id) ? openRows.delete(id) : openRows.add(id);
+        more.hidden = !openRows.has(id); b.setAttribute("aria-expanded", openRows.has(id)); return;
       }
       case "delItem": {
         const it = sec.items[row.dataset.i];
         if (!confirm(`Delete “${it.name}” from the menu?`)) return;
-        sec.items.splice(row.dataset.i, 1); toast(`Deleted ${it.name}`); break;
+        sec.items.splice(row.dataset.i, 1); break;
       }
       case "addItem": {
         const it = { id: uid(), name: "New dish", desc: "", price: 0, diet: "veg", spice: 0, tags: [], allergens: [] };
-        sec.items.push(it); open.add(it.id); $("#find").value = "";
+        sec.items.push(it); openRows.add(it.id); $("#find").value = "";
         renderMenu(); changed();
-        const r = sections.querySelector(`.sec[data-s="${s}"] .row:last-of-type .nm`); r.focus(); r.select(); return;
+        const r = [...secs.querySelectorAll(`.sec[data-s="${s}"] .row .nm`)].pop(); r.focus(); r.select(); return;
       }
       case "up": case "down": {
         const j = s + (b.dataset.act === "up" ? -1 : 1);
@@ -443,126 +502,48 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     }
     renderMenu(); changed();
   });
-  $("#addSection").addEventListener("click", () => {
+  $("#addSection").onclick = () => {
     menu.sections.push({ id: "s" + uid(), title: "New section", note: "", items: [] });
     renderMenu(); changed();
-    const t = sections.querySelector(".sec:last-child .t"); t.scrollIntoView({ behavior: "smooth", block: "center" }); t.focus(); t.select();
-  });
-  $("#find").addEventListener("input", renderMenu);
+    const t = secs.querySelector(".sec:last-child .t"); t.scrollIntoView({ behavior: "smooth", block: "center" }); t.focus(); t.select();
+  };
+  $("#find").oninput = renderMenu;
 
-  /* ---------- Tables & QR ---------- */
-  const defaultBase = new URL("./", location.href).href;
-  const cards = Object.assign({ base: defaultBase, from: 1, to: 12, theme: "ivory" }, store.get(CARDS) || {});
-  $("#base").value = cards.base; $("#from").value = cards.from; $("#to").value = cards.to;
-
-  const link = n => { const u = new URL(cards.base || defaultBase, location.href); u.searchParams.set("t", n); return u.href; };
-  function qr(text) { const q = qrcode(0, "Q"); q.addData(text); q.make(); return q; }
-
-  function renderQR() {
-    if (!window.qrcode) { $("#qrGrid").innerHTML = `<p class="note">The QR code library didn't load. Check the internet connection and reload.</p>`; return; }
-    let warn = "";
-    try {
-      const u = new URL(cards.base, location.href);
-      if (u.protocol === "file:") warn = "This address is a file on this computer, so phones can't open it. Use the live site address instead.";
-      else if (/^(localhost|127\.|\[::1\])/.test(u.hostname)) warn = "<b>localhost</b> only works on this computer. Use the live site address (or this PC's Wi-Fi IP for a quick phone test).";
-    } catch { warn = "That doesn't look like a valid web address."; }
-    $("#qrNote").innerHTML = warn; $("#qrNote").hidden = !warn;
-
-    const from = Math.max(1, +cards.from || 1), to = Math.min(from + 199, Math.max(from, +cards.to || from));
-    let html = "";
-    for (let n = from; n <= to; n++) {
-      const label = String(n).padStart(2, "0"), href = link(label);
-      html += `<div class="qr-card">
-        <div class="code">${qr(href).createSvgTag({ cellSize: 4, margin: 0, scalable: true })}</div>
-        <b>Table ${label}</b>
-        <div class="url">${esc(href)}</div>
-        <div class="acts">
-          <a class="btn" href="${esc(href)}" target="_blank" rel="noopener">Open</a>
-          <button class="btn" data-png="${label}">Download PNG</button>
-        </div>
-      </div>`;
-    }
-    $("#qrGrid").innerHTML = html;
-  }
-  let qrT;
-  ["#base", "#from", "#to"].forEach(id => $(id).addEventListener("input", () => {
-    cards.base = $("#base").value.trim() || defaultBase; cards.from = +$("#from").value; cards.to = +$("#to").value;
-    store.set(CARDS, cards); renderStats();
-    clearTimeout(qrT); qrT = setTimeout(renderQR, 200);
-  }));
-  $("#qrGrid").addEventListener("click", e => {
-    const b = e.target.closest("[data-png]"); if (!b) return;
-    const q = qr(link(b.dataset.png)), n = q.getModuleCount(), quiet = 4, px = 1024, cell = px / (n + quiet * 2);
-    const c = document.createElement("canvas"); c.width = c.height = px;
-    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, px, px); g.fillStyle = "#000";
-    for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) g.fillRect(Math.floor((k + quiet) * cell), Math.floor((r + quiet) * cell), Math.ceil(cell), Math.ceil(cell));
-    c.toBlob(blob => download(blob, `table-${b.dataset.png}-qr.png`));
-  });
-
-  /* ---------- Details ---------- */
+  /* ============ Restaurant details ============ */
   const fields = [
     ["restaurant", "Restaurant name"], ["tagline", "Tagline"],
-    ["hotel", "Hotel name", "Optional. Shown above the menu and on table cards"], ["city", "City", "Optional"],
+    ["hotel", "Hotel name", "Optional"], ["city", "City", "Optional"],
     ["hours", "Opening hours", "", "wide"],
-    ["wifi.name", "Wi-Fi network"], ["wifi.password", "Wi-Fi password"],
+    ["wifi.name", "Wi-Fi network", "Leave empty to hide"], ["wifi.password", "Wi-Fi password"],
     ["footnote", "Footer note", "Taxes, service charge, allergy notice", "wide", true]
   ];
   const getP = (o, p) => p.split(".").reduce((a, k) => a?.[k], o);
   const setP = (o, p, v) => { const ks = p.split("."), last = ks.pop(); ks.reduce((a, k) => a[k] ??= {}, o)[last] = v; };
-  $("#details").innerHTML = fields.map(([p, l, h, w, area]) => `<label class="field ${w || ""}">${l}${h ? ` <span class="hint">${h}</span>` : ""}
+  function renderDetails() {
+    $("#details").innerHTML = fields.map(([p, l, h, w, area]) => `<label class="field ${w || ""}">${l}${h ? ` <span class="hint">${h}</span>` : ""}
       ${area ? `<textarea data-p="${p}">${esc(getP(menu.venue, p))}</textarea>` : `<input data-p="${p}" value="${esc(getP(menu.venue, p))}">`}</label>`).join("");
+  }
   $("#details").addEventListener("input", e => { if (e.target.dataset.p) { setP(menu.venue, e.target.dataset.p, e.target.value); changed(); } });
 
-  /* ---------- Tabs ---------- */
-  document.querySelector(".tabs").addEventListener("click", e => {
-    const b = e.target.closest("[data-view]"); if (!b) return;
-    document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
-    document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + b.dataset.view);
-    if (b.dataset.view === "tables") renderQR();
-    try { sessionStorage.setItem("admin-tab", b.dataset.view); } catch {}
-  });
-
-  /* ---------- Publish / discard ---------- */
-  function download(blob, name) {
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  }
-  $("#publishBtn").addEventListener("click", () => $("#publishDlg").hidden = false);
-  $("#publishDlg").addEventListener("click", e => { if (e.target === e.currentTarget || e.target.closest("[data-close]")) $("#publishDlg").hidden = true; });
-  $("#downloadBtn").addEventListener("click", () => {
-    const js = `/*\n  Menu content. Generated by admin.html on ${new Date().toLocaleString()}.\n  Replace the old menu-data.js on the site with this file to publish.\n*/\nwindow.MENU = ${JSON.stringify(menu, null, 2)};\n`;
-    download(new Blob([js], { type: "text/javascript" }), "menu-data.js");
-    $("#publishDlg").hidden = true;
-    toast("Downloaded. Upload it to the site to go live.");
-  });
-  $("#discardBtn").addEventListener("click", () => {
-    if (!confirm("Throw away all unpublished changes and go back to the live menu?")) return;
-    store.del(DRAFT); menu = JSON.parse(published); location.reload();
-  });
-
-  let tt;
-  function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2600); }
-
-  /* ---------- Orders ---------- */
-  const inr = n => "₹" + new Intl.NumberFormat("en-IN").format(n || 0);
+  /* ============ Orders ============ */
   const NEXT = { new: ["preparing", "Start preparing"], preparing: ["served", "Mark served"], served: ["done", "Close bill"] };
-  let orders = [], seen = null, soundOn = true, actx = null;
-  try { soundOn = localStorage.getItem("admin-sound") !== "off"; } catch {}
-  const setSoundBtn = () => { $("#soundBtn").textContent = soundOn ? "Sound on" : "Sound off"; $("#soundBtn").setAttribute("aria-pressed", soundOn); };
+  let orders = [], seen = null, soundOn = ls.get("admin-sound", true), actx = null;
+  const setSoundBtn = () => $("#soundBtn").textContent = soundOn ? "Sound on" : "Sound off";
   setSoundBtn();
-  $("#soundBtn").onclick = () => { soundOn = !soundOn; try { localStorage.setItem("admin-sound", soundOn ? "on" : "off"); } catch {} setSoundBtn(); if (soundOn) chime(); };
+  $("#soundBtn").onclick = () => { soundOn = !soundOn; ls.set("admin-sound", soundOn); setSoundBtn(); if (soundOn) chime(); };
   document.addEventListener("pointerdown", () => { if (!actx) try { actx = new AudioContext(); } catch {} }, { once: true });
   function chime() {
     if (!soundOn || !actx) return;
     [880, 1320].forEach((f, k) => {
       const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + k * 0.16;
-      o.frequency.value = f; o.type = "sine"; o.connect(g); g.connect(actx.destination);
+      o.frequency.value = f; o.connect(g); g.connect(actx.destination);
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
       o.start(t); o.stop(t + 0.55);
     });
   }
   const ago = iso => { const m = Math.floor((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.floor(m / 60) + " h " + (m % 60) + " min ago"; };
   const clock = iso => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); };
 
   function orderCard(o, fresh) {
     const mins = (Date.now() - Date.parse(o.created_at)) / 60000;
@@ -570,14 +551,13 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
     const nx = NEXT[o.status];
     const actions = o.status === "done" ? `<span class="tagx">Closed</span>`
       : o.status === "cancelled" ? `<span class="tagx">Cancelled</span>`
-      : `<button class="btn quiet" data-st="cancelled" title="Cancel order">Cancel</button><button class="btn primary" data-st="${nx[0]}">${nx[1]}</button>`;
+      : `<button class="btn quiet" data-st="cancelled">Cancel</button><button class="btn primary" data-st="${nx[0]}">${nx[1]}</button>`;
     return `<article class="order${fresh ? " fresh" : ""}" data-id="${esc(o.id)}">
       <header><b>Table ${esc(o.table_no)}</b><time class="${late ? "late" : ""}">${clock(o.created_at)} · ${ago(o.created_at)}</time></header>
       <ul>${(o.items || []).map(i => `<li><span class="q">${+i.qty}×</span><span>${esc(i.name)}</span><span class="p">${i.price == null ? "MP" : inr(i.price * i.qty)}</span></li>`).join("")}</ul>
       ${o.note ? `<p class="onote">“${esc(o.note)}”</p>` : ""}
       <footer><strong>${inr(o.subtotal)}</strong>${actions}</footer></article>`;
   }
-
   function renderOrders() {
     const isNew = o => seen && !seen.has(o.id);
     if (orders.some(isNew)) chime();
@@ -590,56 +570,150 @@ main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
       col.querySelector(".list").innerHTML = list.map(o => orderCard(o, isNew(o))).join("") ||
         `<div class="empty">${st === "new" ? "Waiting for orders…" : "Nothing here"}</div>`;
     });
-    const closed = food.filter(o => o.status === "done" || o.status === "cancelled").reverse();
-    const takings = closed.filter(o => o.status === "done").reduce((a, o) => a + (o.subtotal || 0), 0);
-    $("#closedSum").textContent = `Closed today (${closed.length}) · ${inr(takings)} before tax`;
+    const today = food.filter(o => o.created_at >= startOfToday());
+    const closed = today.filter(o => o.status === "done" || o.status === "cancelled").reverse();
+    const valid = today.filter(o => o.status !== "cancelled");
+    const takings = valid.reduce((a, o) => a + (o.subtotal || 0), 0);
+    $("#closedSum").textContent = `Closed today (${closed.length})`;
     $("#closedList").innerHTML = closed.map(o => orderCard(o)).join("");
+    const open = food.filter(o => ["new", "preparing", "served"].includes(o.status));
     const waiting = food.filter(o => o.status === "new").length + reqs.length;
-    openCount = food.filter(o => ["new", "preparing", "served"].includes(o.status)).length;
+    const tables = new Set(open.map(o => o.table_no)).size;
+    $("#liveStats").innerHTML = [
+      ["Open orders", open.length, `${food.filter(o => o.status === "new").length} waiting to start`],
+      ["Tables seated", tables, "with an open order"],
+      ["Today's sales", inr(takings), "before tax"],
+      ["Orders today", valid.length, valid.length ? `avg ${inr(takings / valid.length)}` : "—"]
+    ].map(([k, v, e]) => `<div class="stat"><small>${k}</small><b>${v}</b><em>${e}</em></div>`).join("");
     $("#ordBadge").hidden = !waiting; $("#ordBadge").textContent = waiting;
     document.title = (waiting ? `(${waiting}) ` : "") + "Menu Admin";
     seen = new Set(orders.map(o => o.id));
-    renderStats();
   }
-
   async function loadOrders() {
-    try { orders = await window.Orders.list(); renderOrders(); }
-    catch (e) { console.error(e); $("#reqs").innerHTML = `<p class="note">Couldn't load orders: ${esc(e.message || e)}</p>`; }
+    try { orders = await B.listOrders(864e5); $("#ordersErr").hidden = true; renderOrders(); }
+    catch (e) { $("#ordersErr").textContent = "Couldn't load orders: " + B.errText(e); $("#ordersErr").hidden = false; }
   }
   $("#view-orders").addEventListener("click", async e => {
     const b = e.target.closest("[data-st]"); if (!b) return;
     const id = b.closest("[data-id]").dataset.id;
-    if (b.dataset.st === "cancelled" && !confirm("Cancel this order?")) return;
+    if (b.dataset.st === "cancelled" && !confirm("Cancel this order? The guest will see it as cancelled.")) return;
     b.disabled = true;
-    try { await window.Orders.setStatus(id, b.dataset.st); if (window.Orders.live) await loadOrders(); }
-    catch (err) { b.disabled = false; toast("Couldn't update: " + (err.message || err)); }
+    try { await B.setStatus(id, b.dataset.st); await loadOrders(); }
+    catch (err) { b.disabled = false; toast("Couldn't update: " + B.errText(err)); }
+  });
+  $("#modeNote").className = "mode" + (B.live ? " live" : "");
+  $("#modeNote").innerHTML = B.live ? "<i></i>Live: orders from every table" : "<i></i>Demo mode: this browser only";
+  $("#clearDemo").hidden = B.live;
+  $("#clearDemo").onclick = () => { if (confirm("Delete all demo orders?")) B.clearDemo(); };
+
+  /* ============ Sales ============ */
+  let salesDays = 1;
+  $("#range").onclick = e => {
+    const b = e.target.closest("[data-days]"); if (!b) return;
+    salesDays = +b.dataset.days;
+    document.querySelectorAll("#range button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    renderSales();
+  };
+  async function renderSales() {
+    let rows;
+    try {
+      const since = salesDays === 1 ? Date.now() - Date.parse(startOfToday()) : salesDays * 864e5;
+      rows = (await B.listOrders(since)).filter(o => o.kind === "order" && o.status !== "cancelled");
+    } catch (e) { $("#salesStats").innerHTML = `<p class="note">Couldn't load sales: ${esc(B.errText(e))}</p>`; return; }
+    const revenue = rows.reduce((a, o) => a + (o.subtotal || 0), 0);
+    const portions = rows.reduce((a, o) => a + (o.items || []).reduce((b, i) => b + (+i.qty || 0), 0), 0);
+    const label = salesDays === 1 ? "today" : `last ${salesDays} days`;
+    $("#salesStats").innerHTML = [
+      ["Sales", inr(revenue), `before tax, ${label}`],
+      ["Orders", rows.length, label],
+      ["Average order", rows.length ? inr(revenue / rows.length) : "—", "per order"],
+      ["Dishes served", portions, "portions"]
+    ].map(([k, v, e]) => `<div class="stat"><small>${k}</small><b>${v}</b><em>${e}</em></div>`).join("");
+
+    // orders by hour (only the hours the restaurant is busy, at least 11:00–23:00)
+    const byHour = Array(24).fill(0); rows.forEach(o => byHour[new Date(o.created_at).getHours()]++);
+    const used = byHour.map((n, h) => n ? h : null).filter(h => h != null);
+    const lo = Math.min(11, ...used), hi = Math.max(23, ...used);
+    const hrs = byHour.slice(lo, hi + 1), max = Math.max(1, ...hrs);
+    $("#hours").innerHTML = rows.length ? `<div class="hours" style="--n:${hrs.length}">${hrs.map((n, k) => `<div class="bar" style="height:${n / max * 100}%" title="${lo + k}:00 — ${n} orders">${n ? `<span>${n}</span>` : ""}</div>`).join("")}</div>
+      <div class="hours-axis" style="--n:${hrs.length}">${hrs.map((_, k) => `<span>${(lo + k) % 3 === 0 ? (lo + k) : ""}</span>`).join("")}</div>` : `<p class="muted">No orders yet ${label}.</p>`;
+    const peak = byHour.indexOf(Math.max(...byHour));
+    $("#hoursSub").textContent = rows.length ? `Busiest hour: ${peak}:00–${peak + 1}:00` : "Orders by hour of day";
+
+    // best sellers
+    const dish = new Map();
+    rows.forEach(o => (o.items || []).forEach(i => { const d = dish.get(i.name) || { q: 0, r: 0 }; d.q += +i.qty; d.r += (i.price || 0) * i.qty; dish.set(i.name, d); }));
+    const top = [...dish].sort((a, b) => b[1].q - a[1].q).slice(0, 6), topMax = top[0]?.[1].q || 1;
+    $("#top").innerHTML = top.map(([n, d]) => `<li><span>${esc(n)}</span><em>${d.q} · ${inr(d.r)}</em><div class="track"><i style="width:${d.q / topMax * 100}%"></i></div></li>`).join("") || `<li class="muted">Nothing sold yet.</li>`;
+
+    // tables
+    const tb = new Map(); rows.forEach(o => tb.set(o.table_no, (tb.get(o.table_no) || 0) + (o.subtotal || 0)));
+    const tbs = [...tb].sort((a, b) => b[1] - a[1]).slice(0, 6), tbMax = tbs[0]?.[1] || 1;
+    $("#tablesRank").innerHTML = tbs.map(([n, r]) => `<li><span>Table ${esc(n)}</span><em>${inr(r)}</em><div class="track"><i style="width:${r / tbMax * 100}%;background:var(--accent)"></i></div></li>`).join("") || `<li class="muted">No tables yet.</li>`;
+
+    // service time (created → served/closed, using updated_at of served orders)
+    const times = rows.filter(o => ["served", "done"].includes(o.status) && o.updated_at).map(o => (Date.parse(o.updated_at) - Date.parse(o.created_at)) / 60000).filter(m => m > 0 && m < 240).sort((a, b) => a - b);
+    const med = times.length ? times[Math.floor(times.length / 2)] : null;
+    $("#service").innerHTML = med == null ? `<p class="muted">Shows once orders are marked served.</p>` :
+      `<div class="stat" style="border:0;padding:0"><small>Typical time to serve</small><b>${Math.round(med)} min</b><em>median of ${times.length} orders · fastest ${Math.round(times[0])} min</em></div>`;
+  }
+
+  /* ============ Tables & QR ============ */
+  const defaultBase = new URL("./", location.href).href;
+  const cards = Object.assign({ base: defaultBase, from: 1, to: 12, theme: "ivory" }, ls.get(CARDS) || {});
+  $("#base").value = cards.base; $("#from").value = cards.from; $("#to").value = cards.to;
+  const link = n => { const u = new URL(cards.base || defaultBase, location.href); u.searchParams.set("t", n); return u.href; };
+  const qr = text => { const q = qrcode(0, "Q"); q.addData(text); q.make(); return q; };
+  function renderQR() {
+    if (!window.qrcode) { $("#qrGrid").innerHTML = `<p class="note">The QR code library didn't load. Check the connection and reload.</p>`; return; }
+    let warn = "";
+    try {
+      const u = new URL(cards.base, location.href);
+      if (u.protocol === "file:") warn = "This address is a file on this computer, so phones can't open it. Use the live site address.";
+      else if (/^(localhost|127\.|\[::1\])/.test(u.hostname)) warn = "<b>localhost</b> only works on this computer. Use the live site address.";
+    } catch { warn = "That doesn't look like a valid web address."; }
+    $("#qrNote").innerHTML = warn; $("#qrNote").hidden = !warn;
+    const from = Math.max(1, +cards.from || 1), to = Math.min(from + 199, Math.max(from, +cards.to || from));
+    let html = "";
+    for (let n = from; n <= to; n++) {
+      const label = String(n).padStart(2, "0"), href = link(label);
+      html += `<div class="qr-card"><div class="code">${qr(href).createSvgTag({ cellSize: 4, margin: 0, scalable: true })}</div>
+        <b>Table ${label}</b><div class="url">${esc(href)}</div>
+        <div class="acts"><a class="btn" href="${esc(href)}" target="_blank" rel="noopener">Open</a><button class="btn" data-png="${label}">PNG</button></div></div>`;
+    }
+    $("#qrGrid").innerHTML = html;
+  }
+  let qrT;
+  ["#base", "#from", "#to"].forEach(id => $(id).addEventListener("input", () => {
+    cards.base = $("#base").value.trim() || defaultBase; cards.from = +$("#from").value; cards.to = +$("#to").value;
+    ls.set(CARDS, cards); clearTimeout(qrT); qrT = setTimeout(renderQR, 200);
+  }));
+  $("#qrGrid").addEventListener("click", e => {
+    const b = e.target.closest("[data-png]"); if (!b) return;
+    const q = qr(link(b.dataset.png)), n = q.getModuleCount(), quiet = 4, px = 1024, cell = px / (n + quiet * 2);
+    const c = document.createElement("canvas"); c.width = c.height = px;
+    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, px, px); g.fillStyle = "#000";
+    for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) g.fillRect(Math.floor((k + quiet) * cell), Math.floor((r + quiet) * cell), Math.ceil(cell), Math.ceil(cell));
+    c.toBlob(blob => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `table-${b.dataset.png}-qr.png`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); });
   });
 
-  async function startOrders() {
-    const live = window.Orders.live;
-    $("#modeNote").className = "mode" + (live ? " live" : "");
-    $("#modeNote").innerHTML = live ? "<i></i>Live: orders from every table" : "<i></i>Demo mode: only orders placed in this browser show up";
-    $("#clearDemo").hidden = live;
-    $("#clearDemo").onclick = () => { if (confirm("Delete all demo orders?")) window.Orders.clearDemo(); };
-    if (live && !(await window.Orders.session())) {
-      $("#login").hidden = false; $("#ordersWrap").hidden = true;
-      $("#login").onsubmit = async ev => {
-        ev.preventDefault(); $("#lErr").hidden = true;
-        try { await window.Orders.signIn($("#lEmail").value, $("#lPass").value); location.reload(); }
-        catch (err) { $("#lErr").textContent = err.message || "Sign-in failed"; $("#lErr").hidden = false; }
-      };
-      return;
-    }
-    $("#signOut").hidden = !live; $("#signOut").onclick = () => window.Orders.signOut();
-    window.Orders.subscribe(loadOrders);
-    await loadOrders();
-    setInterval(renderOrders, 30000);   // keep "x min ago" fresh
+  /* ============ Tabs ============ */
+  function show(view) {
+    document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x.dataset.view === view));
+    document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + view);
+    if (view === "tables") renderQR();
+    if (view === "sales") renderSales();
+    try { sessionStorage.setItem("admin-tab", view); } catch {}
   }
-  startOrders();
+  document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("[data-view]"); if (b) show(b.dataset.view); });
 
-  renderMenu(); renderStats(); status(JSON.stringify(menu) !== published);
+  /* ============ Boot ============ */
+  renderMenu(); renderDetails(); status();
+  B.onOrdersChange(() => { loadOrders(); if (!$("#view-sales").hidden) renderSales(); });
+  await loadOrders();
+  setInterval(renderOrders, 30000);
   let tab; try { tab = sessionStorage.getItem("admin-tab"); } catch {}
-  if (tab) document.querySelector(`.tabs [data-view="${tab}"]`)?.click();
+  if (tab && document.querySelector(`.tabs [data-view="${tab}"]`)) show(tab);
 })();
 </script>
 </body>
